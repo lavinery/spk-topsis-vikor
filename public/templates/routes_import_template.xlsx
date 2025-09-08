@@ -1,0 +1,11 @@
+mountain_name,route_name,distance_km,elevation_gain_m,slope_class,land_cover_key,water_sources_score,support_facility_score,permit_required,province,elevation_m
+Gunung Semeru,Jalur Ranu Kumbolo,12.5,1200,3,forest,7,6,1,Jawa Timur,3676
+Gunung Semeru,Jalur Ranu Pane,15.2,1400,4,forest,8,5,1,Jawa Timur,3676
+Gunung Rinjani,Jalur Sembalun,8.7,1800,4,grassland,6,7,1,Nusa Tenggara Barat,3726
+Gunung Rinjani,Jalur Senaru,12.3,1600,3,forest,7,8,1,Nusa Tenggara Barat,3726
+Gunung Kerinci,Jalur Kersik Tuo,13.8,2000,5,forest,5,4,1,Jambi,3805
+Gunung Kerinci,Jalur Sungai Penuh,16.2,2200,5,forest,4,3,1,Jambi,3805
+Gunung Merapi,Jalur Selo,8.5,1000,3,grassland,6,7,0,Jawa Tengah,2930
+Gunung Merapi,Jalur Kinahrejo,7.2,900,2,grassland,7,8,0,Jawa Tengah,2930
+Gunung Bromo,Jalur Cemoro Lawang,4.2,200,1,grassland,8,9,0,Jawa Timur,2329
+Gunung Bromo,Jalur Ngadisari,5.1,300,2,grassland,7,8,0,Jawa Timur,2329

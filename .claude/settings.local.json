@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/C:\\laragon\\www\\spk-topsis\\resources\\css/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\resources\\views\\layouts/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\resources\\views/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\app\\Services/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\app\\Services/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\app\\Services/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\app\\Support/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\resources\\views\\livewire\\assessment/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\resources\\views\\livewire\\assessment/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\resources\\views\\livewire\\assessment/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\app\\Livewire\\Assessment/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\app\\Livewire\\Assessment/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\routes/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\routes/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\routes/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\resources\\views\\livewire\\assessment/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\app\\Livewire\\Assessment/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\resources\\views\\livewire\\assessment/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\app\\Http\\Controllers/**)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\app\\Services/**)",
+      "Bash(php artisan route:list:*)",
+      "Bash(php artisan log:show:*)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\storage\\logs/**)",
+      "Bash(php artisan tinker:*)",
+      "Bash(php artisan make:migration:*)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\database\\migrations/**)",
+      "Bash(php artisan:*)",
+      "Bash(curl:*)",
+      "Read(/C:\\laragon\\www\\spk-topsis\\routes/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
