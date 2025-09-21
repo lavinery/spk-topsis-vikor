@@ -13,7 +13,6 @@ class UserWizard extends Component
     public int $i = 0;                // index current step
     public array $answers = [];       // [criterion_id => value]
     public bool $open = true;         // modal visible
-    public float $vikor_v = 0.50;     // default v
     public bool $saved = false;       // autosave indicator
 
     public function mount($id)
@@ -174,9 +173,12 @@ class UserWizard extends Component
         if ($c['scale'] === 'numeric') {
             $payload['value_numeric'] = is_numeric($val) ? (float)$val : null;
             $payload['value_raw'] = (string)$val;
+            // Store raw input for fuzzy processing
+            $payload['raw_input'] = is_numeric($val) ? (float)$val : null;
         } else {
             $payload['value_raw'] = (string)$val;         // simpan key
             $payload['value_numeric'] = null;              // transformasi nanti saat normalisasi (kalau dipakai)
+            $payload['raw_input'] = null;
         }
         
         DB::table('assessment_answers')->updateOrInsert(
@@ -196,15 +198,13 @@ class UserWizard extends Component
         
         $this->saveCurrent();
         
-        // Use JavaScript to submit POST form to run-both
-        \Log::info('UserWizard dispatching run-both-calculation', [
-            'assessmentId' => $this->assessmentId,
-            'v' => $this->vikor_v
+        // Use JavaScript to submit POST form to run TOPSIS
+        \Log::info('UserWizard dispatching run-topsis-calculation', [
+            'assessmentId' => $this->assessmentId
         ]);
         
-        $this->dispatch('run-both-calculation', [
-            'assessmentId' => $this->assessmentId,
-            'v' => $this->vikor_v
+        $this->dispatch('run-topsis-calculation', [
+            'assessmentId' => $this->assessmentId
         ]);
     }
 

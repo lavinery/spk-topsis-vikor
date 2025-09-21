@@ -6,7 +6,7 @@ return [
     | SPK Pure Formula Configuration
     |--------------------------------------------------------------------------
     |
-    | Configuration for pure TOPSIS and VIKOR implementation
+    | Configuration for pure TOPSIS implementation
     | without compatibility mapping or special normalizations
     |
     */
@@ -15,18 +15,6 @@ return [
     'strict_missing' => true,               // Missing data → exclude alternative
     'pure_sources' => ['MOUNTAIN', 'ROUTE'], // Only per-alternative criteria
     
-    /*
-    |--------------------------------------------------------------------------
-    | VIKOR Configuration
-    |--------------------------------------------------------------------------
-    */
-    
-    'vikor' => [
-        'default_v' => 0.5,                 // Default compromise parameter (0-1)
-        'v_min' => 0.0,                     // Minimum v value
-        'v_max' => 1.0,                     // Maximum v value
-        'v_step' => 0.1,                    // Step for v slider
-    ],
     
     /*
     |--------------------------------------------------------------------------
@@ -46,5 +34,23 @@ return [
         'C19' => 0.157895,  // Kecuraman (3% / 0.19)
         'C20' => 0.052632,  // Sumber Air (1% / 0.19)
         'C21' => 0.052632,  // Sarana Pendukung (1% / 0.19)
+    ],
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Fuzzy Processing Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for fuzzy MADM processing layer
+    |
+    */
+    
+    'fuzzy' => [
+        'enabled' => true,
+        'defuzzification' => 'centroid',
+        'default_shape' => 'triangular',
+        'resolution' => 200,
+        'input_range' => [1.0, 5.0], // Default input range for user criteria
+        'default_term' => 'SEDANG', // Default term for out-of-range inputs
     ],
 ];

@@ -131,23 +131,13 @@
                 ← Sebelumnya
             </button>
 
-            {{-- VIKOR v parameter (only on last step) --}}
+            {{-- Finish button (only on last step) --}}
             <div class="flex items-center gap-4" x-show="$wire.i === $wire.steps.length - 1">
-                <label class="text-sm text-neutral-sub font-medium">v (VIKOR)</label>
-                <input 
-                    type="range" 
-                    min="0" 
-                    max="1" 
-                    step="0.05" 
-                    x-model="$wire.vikor_v" 
-                    class="w-40 accent-brand"
-                >
-                <span class="text-sm text-neutral-sub w-12 font-medium" x-text="Math.round($wire.vikor_v * 100) + '%'"></span>
                 <button 
                     @click="$wire.finishAndRun()" 
                     class="px-8 py-3 rounded-xl bg-brand text-white hover:bg-indigo-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
                 >
-                    Hitung TOPSIS & VIKOR
+                    Hitung TOPSIS
                 </button>
             </div>
 
@@ -326,8 +316,8 @@
                 ];
             },
             
-            async submitRunBothCalculation(assessmentId, v) {
-                console.log('Submitting run-both calculation:', { assessmentId, v });
+            async submitTopsisCalculation(assessmentId) {
+                console.log('Submitting TOPSIS calculation:', { assessmentId });
                 
                 try {
                     // Get CSRF token
@@ -370,9 +360,9 @@
                 // Store wire reference
                 this.wire = $wire;
                 
-                // Listen for run-both-calculation event
-                this.$wire.on('run-both-calculation', (data) => {
-                    console.log('Received run-both-calculation event:', data);
+                // Listen for run-topsis-calculation event
+                this.$wire.on('run-topsis-calculation', (data) => {
+                    console.log('Received run-topsis-calculation event:', data);
                     console.log('Assessment ID:', data.assessmentId, 'Type:', typeof data.assessmentId);
                     
                     let assessmentId = data.assessmentId;
@@ -390,7 +380,7 @@
                         return;
                     }
                     
-                    this.submitRunBothCalculation(assessmentId, data.v);
+                    this.submitTopsisCalculation(assessmentId);
                 });
                 
                 // keyboard shortcuts

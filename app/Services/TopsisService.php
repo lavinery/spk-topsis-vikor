@@ -7,6 +7,7 @@ use App\Models\AssessmentAnswer;
 use App\Models\AssessmentAlternative;
 use App\Models\AssessmentStep;
 use App\Models\Criterion;
+use App\Services\FuzzyService;
 use Illuminate\Support\Facades\DB;
 
 final class TopsisService
@@ -455,6 +456,12 @@ final class TopsisService
                 ->keyBy('criterion_id');
         }
         
+        // Initialize FuzzyService if fuzzy processing is enabled
+        $fuzzyService = null;
+        if (config('spk.fuzzy.enabled', false)) {
+            $fuzzyService = new FuzzyService();
+        }
+        
         foreach ($alts as $idx => $alt) {
             $r = $alt->route;
             $m = $r->mountain;
@@ -469,7 +476,22 @@ final class TopsisService
                 if ($c->source === 'USER') {
                     // Get user answer for USER criteria (C1-C14)
                     $answer = $userAnswers->get($c->id);
-                    $val = $answer?->value_numeric;
+                    $rawValue = $answer?->value_numeric;
+                    
+                    if (is_numeric($rawValue)) {
+                        // Check if fuzzy processing is enabled for this criterion
+                        if ($fuzzyService && $c->is_fuzzy) {
+                            // Apply fuzzy processing
+                            $fuzzyResult = $fuzzyService->fuzzifyAndDefuzzify((float)$rawValue, $c->id);
+                            $val = $fuzzyResult['defuzzified_value'];
+                            
+                            // Store fuzzy processing metadata in assessment step for later viewing
+                            $this->storeFuzzyStep($assessment, $c, $rawValue, $fuzzyResult);
+                        } else {
+                            // Use crisp value directly
+                            $val = (float)$rawValue;
+                        }
+                    }
                 } elseif ($c->source === 'MOUNTAIN') {
                     $val = is_numeric($m?->elevation_m) ? (float)$m->elevation_m : null; // C15
                 } else { // ROUTE
@@ -563,6 +585,27 @@ final class TopsisService
         AssessmentStep::create([
             'assessment_id' => $a->id,
             'step' => $step,
+            'payload' => json_encode($payload, JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_IGNORE),
+        ]);
+    }
+    
+    /** Store fuzzy processing step for later viewing */
+    private function storeFuzzyStep(Assessment $assessment, Criterion $criterion, $rawValue, array $fuzzyResult): void
+    {
+        if (!$assessment) return;
+        
+        $payload = [
+            'criterion_code' => $criterion->code,
+            'criterion_name' => $criterion->name,
+            'raw_input' => $rawValue,
+            'defuzzified_value' => $fuzzyResult['defuzzified_value'],
+            'memberships' => $fuzzyResult['memberships'],
+            'terms' => $fuzzyResult['terms']
+        ];
+        
+        AssessmentStep::create([
+            'assessment_id' => $assessment->id,
+            'step' => 'FUZZY_PROCESSING',
             'payload' => json_encode($payload, JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_IGNORE),
         ]);
     }

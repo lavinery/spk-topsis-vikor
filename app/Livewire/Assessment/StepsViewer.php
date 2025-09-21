@@ -13,20 +13,15 @@ class StepsViewer extends Component
 
     public int $assessmentId;
     public string $activeStep = 'MATRIX_X';
-    public string $activeMethod = 'topsis';
     public array $data = [];
     public array $topsisSteps = [];
-    public array $vikorSteps = [];
 
     public function mount($id)
     {
         $this->assessmentId = (int) $id;
         $this->topsisSteps = [
-          'MATRIX_X','NORMALIZED_R','WEIGHTED_Y','IDEAL_SOLUTION',
+          'FUZZY_PROCESSING','MATRIX_X','NORMALIZED_R','WEIGHTED_Y','IDEAL_SOLUTION',
           'DISTANCES','CLOSENESS_COEFF','RANKING'
-        ];
-        $this->vikorSteps = [
-          'VIKOR_MATRIX_X','VIKOR_BEST_WORST','VIKOR_S_R','VIKOR_Q','VIKOR_RANKING'
         ];
         $this->loadStep($this->activeStep);
     }
@@ -43,16 +38,6 @@ class StepsViewer extends Component
         }
     }
 
-    public function switchMethod($method)
-    {
-        $this->activeMethod = $method;
-        if ($method === 'topsis') {
-            $this->activeStep = 'MATRIX_X';
-        } else {
-            $this->activeStep = 'VIKOR_MATRIX_X';
-        }
-        $this->loadStep($this->activeStep);
-    }
 
     public function render()
     {

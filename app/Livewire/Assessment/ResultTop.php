@@ -12,8 +12,6 @@ class ResultTop extends Component
     public array $top = [];     // [ ['name'=>'GnX — Jalur Y', 'cc'=>0.73], ... ]
     public array $all = [];     // (opsional) full ranking untuk admin toggle
     public array $explain = []; // kontribusi pro/kontra untuk Top-5
-    public array $vikorTop = []; // VIKOR top results
-    public array $vikorAll = []; // VIKOR all results
 
     public function mount($id)
     {
@@ -25,17 +23,12 @@ class ResultTop extends Component
         $mat  = $steps['MATRIX_X']?->payload ?? '[]';
         $dist = $steps['DISTANCES']?->payload ?? '[]';
         
-        // VIKOR data
-        $vikorRank = $steps['VIKOR_RANKING']?->payload ?? '[]';
-        $vikorS = $steps['VIKOR_S_R']?->payload ?? '[]';
         
         // Decode JSON if payload is string
         if (is_string($rank)) $rank = json_decode($rank, true) ?? [];
         if (is_string($cc)) $cc = json_decode($cc, true) ?? [];
         if (is_string($mat)) $mat = json_decode($mat, true) ?? [];
         if (is_string($dist)) $dist = json_decode($dist, true) ?? [];
-        if (is_string($vikorRank)) $vikorRank = json_decode($vikorRank, true) ?? [];
-        if (is_string($vikorS)) $vikorS = json_decode($vikorS, true) ?? [];
 
         $rows = $mat['rows'] ?? []; // index -> "Gn — Jalur"
         $CC   = $cc['CC']   ?? [];  // index -> value
@@ -64,36 +57,6 @@ class ResultTop extends Component
             $this->explain[$i] = $tc[$i] ?? ['pro'=>[],'con'=>[]];
         }
 
-        // VIKOR data processing
-        $vikorRankingIdx = $vikorRank['ranking'] ?? [];
-        $vikorSValues = $vikorS['S'] ?? [];
-        $vikorRValues = $vikorS['R'] ?? [];
-        $vikorQValues = $vikorRank['Q'] ?? []; // Q values are in VIKOR_RANKING step, not VIKOR_S_R
-
-        // VIKOR Top-K
-        $vikorTake = array_slice($vikorRankingIdx, 0, $topK);
-        $this->vikorTop = [];
-        foreach ($vikorTake as $idx) {
-            $name = $rows[$idx] ?? ("Route #".$idx);
-            $this->vikorTop[] = [
-                'name' => $name, 
-                'q' => round($vikorQValues[$idx] ?? 0, 4),
-                's' => round($vikorSValues[$idx] ?? 0, 4),
-                'r' => round($vikorRValues[$idx] ?? 0, 4),
-                'i' => $idx
-            ];
-        }
-
-        // VIKOR All results
-        $this->vikorAll = [];
-        foreach ($vikorRankingIdx as $idx) {
-            $this->vikorAll[] = [
-                'name' => $rows[$idx] ?? ("Route #".$idx), 
-                'q' => round($vikorQValues[$idx] ?? 0, 4),
-                's' => round($vikorSValues[$idx] ?? 0, 4),
-                'r' => round($vikorRValues[$idx] ?? 0, 4)
-            ];
-        }
     }
 
 

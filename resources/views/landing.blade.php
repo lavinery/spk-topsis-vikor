@@ -55,14 +55,6 @@
                     <p class="text-sm text-neutral-sub">Algoritma pengambilan keputusan untuk seleksi jalur optimal berdasarkan jarak ideal positif dan negatif</p>
                 </div>
                 
-                <!-- VIKOR Feature -->
-                <div class="text-center p-6 rounded-xl bg-white border border-neutral-line shadow-soft hover:shadow-md transition-shadow">
-                    <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl">📈</span>
-                    </div>
-                    <h3 class="text-lg font-semibold text-neutral-text mb-3">VIKOR Method</h3>
-                    <p class="text-sm text-neutral-sub">Metode kompromi untuk ranking alternatif dengan mempertimbangkan utility dan regret</p>
-                </div>
                 
                 <!-- Smart Assessment Feature -->
                 <div class="text-center p-6 rounded-xl bg-white border border-neutral-line shadow-soft hover:shadow-md transition-shadow">
@@ -173,43 +165,12 @@
                     </div>
                 </div>
                 
-                <!-- VIKOR Card -->
-                <div class="bg-white border border-neutral-line rounded-xl p-8 shadow-soft">
-                    <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
-                            <span class="text-xl">📈</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-semibold text-neutral-text">VIKOR</h3>
-                            <p class="text-sm text-neutral-sub">VlseKriterijumska Optimizacija I Kompromisno Resenje</p>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-start">
-                            <span class="text-green-500 mr-3">•</span>
-                            <p class="text-sm text-neutral-text">Metode kompromi dengan utility dan regret</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-green-500 mr-3">•</span>
-                            <p class="text-sm text-neutral-text">Menghitung S (utility) dan R (regret) values</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-green-500 mr-3">•</span>
-                            <p class="text-sm text-neutral-text">Parameter v untuk menyeimbangkan utility vs regret</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-green-500 mr-3">•</span>
-                            <p class="text-sm text-neutral-text">Hasil: Nilai Q (0-1), semakin rendah semakin baik</p>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <div class="mt-8 text-center">
                 <div class="bg-white border border-neutral-line rounded-xl p-6 shadow-soft">
-                    <h4 class="text-lg font-semibold text-neutral-text mb-3">Kombinasi Terbaik</h4>
-                    <p class="text-sm text-neutral-sub">Sistem ini menggunakan kedua algoritma untuk memberikan rekomendasi yang komprehensif. TOPSIS memberikan ranking berdasarkan kedekatan dengan solusi ideal, sementara VIKOR memberikan perspektif kompromi yang mempertimbangkan utility dan regret.</p>
+                    <h4 class="text-lg font-semibold text-neutral-text mb-3">Algoritma TOPSIS</h4>
+                    <p class="text-sm text-neutral-sub">Sistem ini menggunakan algoritma TOPSIS untuk memberikan rekomendasi yang komprehensif berdasarkan kedekatan dengan solusi ideal positif dan negatif.</p>
                 </div>
             </div>
         </div>

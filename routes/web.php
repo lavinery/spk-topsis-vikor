@@ -65,7 +65,6 @@ Route::middleware(['auth'])->group(function(){
         ], 405);
     });
     Route::post('/assessments/{id}/run-topsis', [AssessmentRunBothController::class,'runTopsis'])->name('assess.run.topsis');
-    Route::post('/assessments/{id}/run-vikor', [AssessmentRunBothController::class,'runVikor'])->name('assess.run.vikor');
     Route::get('/assessments/{id}/result', ResultTop::class)->name('assess.result');
     Route::get('/assessments/{id}/wizard', UserWizard::class)->name('assess.wizard');
     

@@ -6,13 +6,12 @@ use App\Models\Assessment;
 use App\Services\AnswerNormalizer;
 use App\Services\ConstraintService;
 use App\Services\TopsisService;
-use App\Services\VikorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AssessmentRunBothController extends Controller
 {
-    public function run(Request $r, $id, AnswerNormalizer $norm, ConstraintService $cons, TopsisService $topsis, VikorService $vikor)
+    public function run(Request $r, $id, AnswerNormalizer $norm, ConstraintService $cons, TopsisService $topsis)
     {
         try {
             $a = Assessment::with(['answers','alternatives.route.mountain'])->findOrFail($id);
@@ -34,15 +33,8 @@ class AssessmentRunBothController extends Controller
                 $a->update(['top_k' => (int)$r->input('top_k')]);
             }
 
-            // Save VIKOR v parameter (from wizard or default)
-            $v = (float) min(1, max(0, $r->input('v', 0.5)));
-            DB::table('vikor_params')->updateOrInsert(
-                ['assessment_id' => $a->id],
-                ['v' => $v, 'updated_at' => now(), 'created_at' => now()]
-            );
-
             // Create snapshot for reproducibility
-            $this->createSnapshot($a, $v);
+            $this->createSnapshot($a);
 
             // Ensure user answers are normalized
             $norm->normalize($a);
@@ -50,20 +42,19 @@ class AssessmentRunBothController extends Controller
             // Apply constraints (exclude risky alternatives)
             $cons->apply($a);
 
-            // Run both TOPSIS and VIKOR
+            // Run TOPSIS only
             $topsis->run($a);
-            $vikor->run($a, $v);
 
             // Check if this is an AJAX request
             if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Perhitungan TOPSIS dan VIKOR selesai!',
+                    'message' => 'Perhitungan TOPSIS selesai!',
                     'redirect_url' => route('assess.result', $a->id)
                 ]);
             }
             
-            return redirect()->route('assess.result', $a->id)->with('success', 'Perhitungan TOPSIS dan VIKOR selesai!');
+            return redirect()->route('assess.result', $a->id)->with('success', 'Perhitungan TOPSIS selesai!');
             
         } catch (\Exception $e) {
             \Log::error('AssessmentRunBothController error: ' . $e->getMessage(), [
@@ -121,56 +112,11 @@ class AssessmentRunBothController extends Controller
         return redirect()->route('assess.result', $a->id)->with('success', 'Perhitungan TOPSIS selesai!');
     }
 
-    public function runVikor($id, AnswerNormalizer $norm, ConstraintService $cons, VikorService $vikor)
-    {
-        $a = Assessment::with(['answers','alternatives.route.mountain'])->findOrFail($id);
-
-        // Check if we should use background job for large datasets
-        if ($a->alternatives()->count() > 500) {
-            // TODO: Create RunVikorJob for background processing
-            return back()->with('error','Dataset terlalu besar. Silakan gunakan background job.');
-        }
-
-        // Update assessment configuration if provided
-        if (request()->has('weight_preset_id')) {
-            $a->update(['weight_preset_id' => request()->input('weight_preset_id')]);
-        }
-        if (request()->has('pure_formula')) {
-            $a->update(['pure_formula' => request()->boolean('pure_formula')]);
-        }
-
-        // Save VIKOR v parameter
-        $v = (float) min(1, max(0, request()->input('v', 0.5)));
-        DB::table('vikor_params')->updateOrInsert(
-            ['assessment_id' => $a->id],
-            ['v' => $v, 'updated_at' => now(), 'created_at' => now()]
-        );
-
-        // Ensure user answers are normalized
-        $norm->normalize($a);
-
-        // Apply constraints (exclude risky alternatives)
-        $cons->apply($a);
-
-        // Run VIKOR only
-        $vikor->run($a, $v);
-
-        // Check if this is an AJAX request
-        if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
-            return response()->json([
-                'success' => true,
-                'message' => 'Perhitungan VIKOR selesai!',
-                'redirect_url' => route('assess.result', $a->id)
-            ]);
-        }
-        
-        return redirect()->route('assess.result', $a->id)->with('success', 'Perhitungan VIKOR selesai!');
-    }
 
     /**
      * Create snapshot for reproducibility
      */
-    private function createSnapshot(Assessment $a, float $v): void
+    private function createSnapshot(Assessment $a): void
     {
         // Get criteria used in calculation
         $criteria = \App\Models\Criterion::where('active', 1)
@@ -201,7 +147,6 @@ class AssessmentRunBothController extends Controller
             'weights' => $weightsArray,
             'category_maps' => $categoryMaps,
             'params' => [
-                'VIKOR' => ['v' => $v],
                 'top_k' => $a->top_k,
                 'pure' => $a->pure_formula,
                 'weight_preset_id' => $a->weight_preset_id,

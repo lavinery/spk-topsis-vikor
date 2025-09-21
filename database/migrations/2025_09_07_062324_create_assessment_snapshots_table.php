@@ -17,7 +17,7 @@ return new class extends Migration
             $table->json('criteria');        // daftar kriterian (id, code, name, type, source, active, sort)
             $table->json('weights');         // [code => weight_norm]
             $table->json('category_maps');   // {criterion_code: {key: score}}
-            $table->json('params');          // {algorithm: ['VIKOR'=>{v:0.5}], top_k:5, pure:true}
+            $table->json('params');          // {top_k:5, pure:true, weight_preset_id:1}
             $table->timestamps();
         });
     }

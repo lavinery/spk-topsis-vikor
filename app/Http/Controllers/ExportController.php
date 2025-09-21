@@ -61,14 +61,6 @@ class ExportController extends Controller
                     fputcsv($out, [$i + 1, $alternative, $ccValue]);
                 }
             }
-            // VIKOR ranking format
-            elseif (isset($data['ranking'], $data['Q'])) {
-                fputcsv($out, ['Rank', 'Alternative', 'Q Score']);
-                foreach ($data['ranking'] as $i => $alternative) {
-                    $qValue = $data['Q'][$alternative] ?? 0;
-                    fputcsv($out, [$i + 1, $alternative, $qValue]);
-                }
-            }
             // Generic key=>value dump
             else {
                 fputcsv($out, ['Key', 'Value']);
@@ -132,21 +124,6 @@ class ExportController extends Controller
                 fputcsv($out, []); // Empty row
             }
             
-            // Get VIKOR ranking
-            $vikorRanking = $assessment->steps()
-                ->where('step', 'VIKOR_RANKING')
-                ->where('algorithm', 'VIKOR')
-                ->first();
-                
-            if ($vikorRanking) {
-                $data = json_decode($vikorRanking->payload, true);
-                fputcsv($out, ['VIKOR Ranking']);
-                fputcsv($out, ['Rank', 'Alternative', 'Q Score']);
-                foreach ($data['ranking'] ?? [] as $i => $alternative) {
-                    $qValue = $data['Q'][$alternative] ?? 0;
-                    fputcsv($out, [$i + 1, $alternative, $qValue]);
-                }
-            }
             
             fclose($out);
         }, $filename, [
