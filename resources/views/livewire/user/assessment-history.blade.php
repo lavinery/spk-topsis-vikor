@@ -15,7 +15,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
                     <div class="flex items-center gap-4">
-                        <a href="{{ route('user.dashboard') }}" class="text-neutral-sub hover:text-neutral-text">
+                        <a href="{{ route('landing') }}" class="text-neutral-sub hover:text-neutral-text">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                             </svg>

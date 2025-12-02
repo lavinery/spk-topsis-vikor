@@ -15,10 +15,15 @@ class LandingController extends Controller
 {
     public function index()
     {
+        // Admin tidak boleh mengakses halaman ini
+        if (auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('editor'))) {
+            return redirect()->route('admin.dashboard')->with('error', 'Admin tidak dapat melakukan assessment. Halaman ini khusus untuk user.');
+        }
+
         // filter ringan (opsional): province
         $provinces = \App\Models\Mountain::select('province')->distinct()->pluck('province')->filter()->values();
         $userCriteria = Criterion::where('source','USER')->orderByRaw("CAST(SUBSTRING(code,2) AS UNSIGNED)")->get();
-        
+
         // Get statistics for homepage
         $mountainsCount = \App\Models\Mountain::count();
         $routesCount = \App\Models\Route::count();
@@ -84,6 +89,11 @@ class LandingController extends Controller
         // Check if user is authenticated (allow unauthenticated in testing)
         if (!auth()->check() && !app()->environment('testing')) {
             return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+        }
+
+        // Admin tidak boleh melakukan assessment
+        if (auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('editor'))) {
+            return redirect()->route('admin.dashboard')->with('error', 'Admin tidak dapat melakukan assessment.');
         }
         
         // 1) buat assessment dengan weight preset dan konfigurasi

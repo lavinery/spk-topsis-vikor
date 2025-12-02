@@ -10,8 +10,11 @@ use App\Livewire\Assessment\ResultTop;
 use App\Livewire\Assessment\StepsViewer;
 use App\Livewire\Assessment\UserWizard;
 
-Route::get('/', [LandingController::class,'index'])->name('landing');
-Route::post('/start', [LandingController::class,'start'])->name('landing.start');
+// Landing page - hanya untuk user biasa yang sudah login (bukan admin)
+Route::middleware(['auth'])->group(function() {
+    Route::get('/', [LandingController::class,'index'])->name('landing');
+    Route::post('/start', [LandingController::class,'start'])->name('landing.start');
+});
 
 // API Endpoint for external integration (muncak.id)
 Route::get('/api/test-recommendation/{mountainId}', [LandingController::class,'testRecommendation'])->name('api.test-recommendation');
@@ -43,7 +46,8 @@ Route::post('/login', function (\Illuminate\Http\Request $request) {
             return redirect()->route('admin.dashboard');
         }
 
-        return redirect()->route('user.dashboard');
+        // User biasa redirect ke landing page (halaman pemilihan gunung)
+        return redirect()->route('landing');
     }
 
     return back()->withErrors([
@@ -111,7 +115,6 @@ Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(func
 
 // User Panel Routes
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function(){
-    Route::view('/','user.dashboard')->name('dashboard');
     Route::get('/history', \App\Livewire\User\AssessmentHistory::class)->name('history');
     Route::get('/assessment/{id}/detail', \App\Livewire\User\AssessmentDetail::class)->name('assessment.detail');
 });
