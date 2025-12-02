@@ -16,12 +16,39 @@ class CriterionWeightsCrud extends Component
     public $criterion_id;
     public $weight;
     public $version = 'v1';
+    public $remainingWeight = 1.0;
 
     protected $rules = [
         'criterion_id' => 'required|exists:criteria,id',
         'weight' => 'required|numeric|min:0|max:1',
         'version' => 'required|string|max:10',
     ];
+
+    protected $messages = [
+        'weight.max' => 'Bobot tidak boleh lebih dari 1.0',
+        'weight.min' => 'Bobot tidak boleh kurang dari 0',
+        'weight.required' => 'Bobot wajib diisi',
+        'weight.numeric' => 'Bobot harus berupa angka',
+        'criterion_id.required' => 'Kriteria wajib dipilih',
+        'criterion_id.exists' => 'Kriteria tidak valid',
+    ];
+
+    public function updatedWeight()
+    {
+        $this->calculateRemainingWeight();
+    }
+
+    public function calculateRemainingWeight()
+    {
+        $currentTotal = CriterionWeight::when($this->editingId, function($q) {
+            return $q->where('id', '!=', $this->editingId);
+        })->sum('weight');
+
+        $this->remainingWeight = 1.0 - $currentTotal;
+
+        // Round to avoid floating point precision issues
+        $this->remainingWeight = round($this->remainingWeight, 4);
+    }
 
     public function edit($id)
     {
@@ -36,20 +63,30 @@ class CriterionWeightsCrud extends Component
         $this->criterion_id = null;
         $this->weight = null;
         $this->version = 'v1';
+        $this->calculateRemainingWeight();
     }
 
     public function save()
     {
+        // Validate bobot tidak melebihi sisa yang tersedia
+        $this->calculateRemainingWeight();
+
+        if ($this->weight > $this->remainingWeight && !$this->editingId) {
+            $this->addError('weight', "Bobot melebihi sisa yang tersedia ({$this->remainingWeight}). Total bobot tidak boleh lebih dari 1.0");
+            return;
+        }
+
         $data = $this->validate();
-        
+
         if ($this->editingId) {
             CriterionWeight::findOrFail($this->editingId)->update($data);
+            session()->flash('ok', 'Bobot kriteria berhasil diperbarui');
         } else {
             CriterionWeight::create($data);
+            session()->flash('ok', 'Bobot kriteria berhasil ditambahkan');
         }
-        
+
         $this->resetForm();
-        session()->flash('ok', 'Bobot kriteria berhasil disimpan');
     }
 
     public function delete($id)
@@ -97,6 +134,7 @@ class CriterionWeightsCrud extends Component
             ->get();
 
         $totalWeight = CriterionWeight::sum('weight');
+        $this->calculateRemainingWeight();
 
         return view('livewire.admin.criterion-weights-crud', compact('weights', 'criteria', 'totalWeight'));
     }

@@ -6,28 +6,28 @@
     
     <h1 class="text-2xl font-bold mb-4">Category Maps Management</h1>
     
-    <div class="bg-white border rounded-2xl p-4">
+    <div class="ui-card">
         <form wire:submit.prevent="save" class="grid md:grid-cols-4 gap-4">
-            <div>
-                <label class="text-sm">Criterion</label>
-                <select wire:model="criterion_id" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Criterion</label>
+                <select wire:model="criterion_id" class="w-full">
                     <option value="">-- pilih kriteria kategorikal --</option>
                     @foreach($criteria as $c)
                         <option value="{{ $c->id }}">{{ $c->code }} — {{ $c->name }}</option>
                     @endforeach
                 </select>
             </div>
-            <div>
-                <label class="text-sm">Key</label>
-                <input wire:model="key" class="mt-1 w-full rounded-lg border-gray-300" placeholder="hutan-lebat">
+            <div class="ui-field">
+                <label class="ui-label">Key</label>
+                <input wire:model="key" class="w-full" placeholder="hutan-lebat">
             </div>
-            <div>
-                <label class="text-sm">Score (0..1)</label>
-                <input type="number" min="0" max="1" step="0.01" wire:model="score" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Score (0..1)</label>
+                <input type="number" min="0" max="1" step="0.01" wire:model="score" class="w-full">
             </div>
-            <div>
-                <label class="text-sm">Label</label>
-                <input wire:model="label" class="mt-1 w-full rounded-lg border-gray-300" placeholder="Hutan lebat">
+            <div class="ui-field">
+                <label class="ui-label">Label</label>
+                <input wire:model="label" class="w-full" placeholder="Hutan lebat">
             </div>
             <div class="md:col-span-4 flex items-center gap-2">
                 <button class="px-4 py-2 rounded-xl bg-brand text-white">Simpan</button>
@@ -41,10 +41,10 @@
         </form>
     </div>
 
-    <div class="mt-6 bg-white border rounded-2xl overflow-hidden">
+    <div class="mt-6 bg-white rounded-xl border border-neutral-line overflow-hidden">
         <div class="p-3 flex items-center gap-3">
-            <input type="text" wire:model.live="q" placeholder="Cari key..." class="rounded-lg border-gray-300">
-            <select wire:model.live="criterion_id" class="rounded-lg border-gray-300">
+            <input type="text" wire:model.live="q" placeholder="Cari key..." class="w-64 px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent">
+            <select wire:model.live="criterion_id" class="px-3 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent">
                 <option value="">Semua kriteria</option>
                 @foreach($criteria as $c)
                     <option value="{{ $c->id }}">{{ $c->code }} — {{ $c->name }}</option>

@@ -13,6 +13,8 @@ class CriteriaCrud extends Component
     public $q = '';
     public $editingId = null;
     public $code, $name, $source = 'ROUTE', $type = 'benefit', $active = true, $sort_order = 0, $unit, $scale = 'numeric', $min_hint, $max_hint;
+    public $data_type = 'numeric';
+    public $is_fuzzy = false;
 
     protected $rules = [
         'code' => 'required|regex:/^C\d+$/|max:10',
@@ -23,6 +25,8 @@ class CriteriaCrud extends Component
         'sort_order' => 'integer',
         'unit' => 'nullable|string|max:24',
         'scale' => 'required|in:numeric,categorical',
+        'data_type' => 'required|in:numeric,ordinal,categorical,boolean',
+        'is_fuzzy' => 'boolean',
         'min_hint' => 'nullable|numeric',
         'max_hint' => 'nullable|numeric',
     ];
@@ -44,6 +48,8 @@ class CriteriaCrud extends Component
         $this->sort_order = 0;
         $this->scale = 'numeric';
         $this->min_hint = $this->max_hint = null;
+        $this->data_type = 'numeric';
+        $this->is_fuzzy = false;
     }
 
     public function save()

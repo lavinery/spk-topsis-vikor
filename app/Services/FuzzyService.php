@@ -17,15 +17,23 @@ final class FuzzyService
     public function membershipTriangular(float $x, array $params): float
     {
         [$a, $b, $c] = $params;
-        
+
         if ($x < $a || $x > $c) {
             return 0.0;
         }
-        
+
         if ($x <= $b) {
-            return ($x - $a) / ($b - $a);
+            $denominator = $b - $a;
+            if ($denominator == 0) {
+                return 1.0; // If a == b, x is at the peak
+            }
+            return ($x - $a) / $denominator;
         } else {
-            return ($c - $x) / ($c - $b);
+            $denominator = $c - $b;
+            if ($denominator == 0) {
+                return 1.0; // If b == c, x is at the peak
+            }
+            return ($c - $x) / $denominator;
         }
     }
     
@@ -39,19 +47,27 @@ final class FuzzyService
     public function membershipTrapezoidal(float $x, array $params): float
     {
         [$a, $b, $c, $d] = $params;
-        
+
         if ($x < $a || $x > $d) {
             return 0.0;
         }
-        
+
         if ($x >= $b && $x <= $c) {
             return 1.0;
         }
-        
+
         if ($x < $b) {
-            return ($x - $a) / ($b - $a);
+            $denominator = $b - $a;
+            if ($denominator == 0) {
+                return 1.0; // If a == b, x is at the plateau
+            }
+            return ($x - $a) / $denominator;
         } else {
-            return ($d - $x) / ($d - $c);
+            $denominator = $d - $c;
+            if ($denominator == 0) {
+                return 1.0; // If c == d, x is at the plateau
+            }
+            return ($d - $x) / $denominator;
         }
     }
     
@@ -68,7 +84,11 @@ final class FuzzyService
         
         foreach ($terms as $term) {
             $termArray = is_object($term) ? (array) $term : $term;
-            $params = json_decode($termArray['params_json'], true);
+            $raw = $termArray['params_json'] ?? null;
+            $params = is_array($raw) ? $raw : json_decode((string) $raw, true);
+            if (!is_array($params)) {
+                continue; // skip invalid term
+            }
             $shape = $termArray['shape'];
             $code = $termArray['code'];
             
@@ -140,7 +160,11 @@ final class FuzzyService
                 if (!$term) continue;
                 
                 $termArray = is_object($term) ? (array) $term : $term;
-                $params = json_decode($termArray['params_json'], true);
+                $raw = $termArray['params_json'] ?? null;
+                $params = is_array($raw) ? $raw : json_decode((string) $raw, true);
+                if (!is_array($params)) {
+                    continue;
+                }
                 $shape = $termArray['shape'];
                 
                 $membershipAtX = 0.0;
@@ -169,6 +193,26 @@ final class FuzzyService
      */
     public function fuzzifyAndDefuzzify(float $inputValue, int $criterionId): array
     {
+        // Get fuzzy mapping for input range validation first (so we can short-circuit on out-of-range)
+        $mapping = DB::table('fuzzy_mappings')
+            ->where('criterion_id', $criterionId)
+            ->first();
+        
+        if ($mapping) {
+            // Validate input range
+            if ($inputValue < $mapping->input_min || $inputValue > $mapping->input_max) {
+                // Use default term if input is outside range
+                if ($mapping->default_term_code) {
+                    return [
+                        'defuzzified_value' => $inputValue,
+                        'memberships' => [$mapping->default_term_code => 1.0],
+                        'terms' => [],
+                        'warning' => 'Input outside range, using default term'
+                    ];
+                }
+            }
+        }
+        
         // Get fuzzy terms for this criterion
         $terms = DB::table('fuzzy_terms')
             ->where('criterion_id', $criterionId)
@@ -182,26 +226,6 @@ final class FuzzyService
                 'terms' => [],
                 'error' => 'No fuzzy terms found for criterion'
             ];
-        }
-        
-        // Get fuzzy mapping for input range validation
-        $mapping = DB::table('fuzzy_mappings')
-            ->where('criterion_id', $criterionId)
-            ->first();
-        
-        if ($mapping) {
-            // Validate input range
-            if ($inputValue < $mapping->input_min || $inputValue > $mapping->input_max) {
-                // Use default term if input is outside range
-                if ($mapping->default_term_code) {
-                    return [
-                        'defuzzified_value' => $inputValue,
-                        'memberships' => [$mapping->default_term_code => 1.0],
-                        'terms' => $terms,
-                        'warning' => 'Input outside range, using default term'
-                    ];
-                }
-            }
         }
         
         // Fuzzify the input

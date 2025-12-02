@@ -12,6 +12,7 @@ class StepsViewer extends Component
     use WithPagination;
 
     public int $assessmentId;
+    public string $activeMethod = 'topsis';
     public string $activeStep = 'MATRIX_X';
     public array $data = [];
     public array $topsisSteps = [];
@@ -24,6 +25,15 @@ class StepsViewer extends Component
           'DISTANCES','CLOSENESS_COEFF','RANKING'
         ];
         $this->loadStep($this->activeStep);
+    }
+
+    public function switchMethod($method)
+    {
+        $this->activeMethod = $method;
+        // Reset to first step when switching method
+        if ($method === 'topsis') {
+            $this->loadStep('MATRIX_X');
+        }
     }
 
     public function loadStep($step)

@@ -11,10 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('assessments', function (Blueprint $table) {
-            $table->dropForeign(['weight_preset_id']);
-            $table->dropColumn('weight_preset_id');
-        });
+        if (Schema::hasColumn('assessments', 'weight_preset_id')) {
+            Schema::table('assessments', function (Blueprint $table) {
+                // Try to drop FK + column using the conventional helper; if FK doesn't exist, just drop the column
+                try {
+                    $table->dropConstrainedForeignId('weight_preset_id');
+                } catch (\Throwable $e) {
+                    $table->dropColumn('weight_preset_id');
+                }
+            });
+        }
     }
 
     /**

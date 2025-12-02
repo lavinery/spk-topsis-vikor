@@ -8,39 +8,38 @@
 
     <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-bold">Mountains</h1>
-        <input type="text" wire:model.live="q" placeholder="Cari..." class="rounded-lg border-gray-300">
+        <input type="text" wire:model.live="q" placeholder="Cari..." class="w-72 px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent">
     </div>
-
-    <div class="bg-white border rounded-2xl p-4">
+    <div class="ui-card">
         <form wire:submit.prevent="save" class="grid md:grid-cols-3 gap-4">
-            <div>
-                <label class="text-sm">Nama Gunung</label>
-                <input type="text" wire:model="name" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Nama Gunung</label>
+                <input type="text" wire:model="name" class="w-full">
                 @error('name') <div class="text-xs text-rose-600">{{ $message }}</div> @enderror
             </div>
-            <div>
-                <label class="text-sm">Elevasi (m)</label>
-                <input type="number" wire:model="elevation_m" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Elevasi (m)</label>
+                <input type="number" wire:model="elevation_m" class="w-full">
                 @error('elevation_m') <div class="text-xs text-rose-600">{{ $message }}</div> @enderror
             </div>
-            <div>
-                <label class="text-sm">Provinsi</label>
-                <input type="text" wire:model="province" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Provinsi</label>
+                <input type="text" wire:model="province" class="w-full">
                 @error('province') <div class="text-xs text-rose-600">{{ $message }}</div> @enderror
             </div>
-            <div>
-                <label class="text-sm">Latitude</label>
-                <input type="number" step="0.000001" wire:model="lat" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Latitude</label>
+                <input type="number" step="0.000001" wire:model="lat" class="w-full">
                 @error('lat') <div class="text-xs text-rose-600">{{ $message }}</div> @enderror
             </div>
-            <div>
-                <label class="text-sm">Longitude</label>
-                <input type="number" step="0.000001" wire:model="lng" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Longitude</label>
+                <input type="number" step="0.000001" wire:model="lng" class="w-full">
                 @error('lng') <div class="text-xs text-rose-600">{{ $message }}</div> @enderror
             </div>
-            <div>
-                <label class="text-sm">Status</label>
-                <select wire:model="status" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Status</label>
+                <select wire:model="status" class="w-full">
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                 </select>
@@ -55,8 +54,7 @@
             </div>
         </form>
     </div>
-
-    <div class="mt-6 bg-white border rounded-2xl overflow-hidden">
+    <div class="mt-6 bg-white rounded-xl border border-neutral-line overflow-hidden">
         <table class="min-w-full text-sm">
             <thead class="bg-gray-50">
                 <tr class="text-left">

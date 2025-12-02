@@ -32,7 +32,7 @@ class UserWizard extends Component
             ->orderByRaw("CAST(SUBSTRING(code, 2) AS UNSIGNED)")
             ->get();
 
-        // siapkan steps (+ opsi kalau categorical)
+        // siapkan steps (+ opsi untuk categorical/boolean)
         foreach ($criteria as $c) {
             $step = [
                 'id' => $c->id, 
@@ -46,7 +46,14 @@ class UserWizard extends Component
                 'notes' => $c->notes
             ];
             
-            if ($c->scale === 'categorical') {
+            if ($c->data_type === 'boolean') {
+                // Boolean as categorical with Yes/No
+                $step['scale'] = 'categorical';
+                $step['options'] = [
+                    ['key' => '1', 'label' => 'Ya', 'score' => 1.0],
+                    ['key' => '0', 'label' => 'Tidak', 'score' => 0.0],
+                ];
+            } elseif ($c->scale === 'categorical') {
                 $step['options'] = DB::table('category_maps')
                     ->where('criterion_id', $c->id)
                     ->orderBy('key')

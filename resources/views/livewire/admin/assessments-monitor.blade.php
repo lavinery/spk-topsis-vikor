@@ -8,10 +8,10 @@
 
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold">Monitoring Assessments</h1>
-        <input type="text" wire:model.live="q" placeholder="Cari judul..." class="rounded-lg border-gray-300">
+        <input type="text" wire:model.live="q" placeholder="Cari judul..." class="w-72 px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent">
     </div>
 
-    <div class="mt-6 bg-white border rounded-2xl shadow-sm overflow-hidden">
+    <div class="mt-6 bg-white rounded-xl border border-neutral-line shadow-sm overflow-hidden">
         <table class="min-w-full text-sm">
             <thead class="bg-gray-50">
                 <tr class="text-left">

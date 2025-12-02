@@ -14,11 +14,11 @@ class SimpleCriteriaSeeder extends Seeder
     public function run(): void
     {
         $now = Carbon::now();
-        
+
         // Clear existing data (respect foreign key constraints)
         DB::table('criterion_weights')->delete();
         DB::table('criteria')->delete();
-        
+
         // Simple criteria with equal weights
         $criteria = [
             // USER criteria (C1-C14) - 14 criteria, each gets 1/21 weight
@@ -36,7 +36,7 @@ class SimpleCriteriaSeeder extends Seeder
             ['C12', 'Kesiapan Tim', 'benefit', 'USER', 'ordinal'],
             ['C13', 'Kehadiran Pemandu', 'benefit', 'USER', 'ordinal'],
             ['C14', 'Pembagian Tugas Tim', 'benefit', 'USER', 'ordinal'],
-            
+
             // MOUNTAIN/ROUTE criteria (C15-C21) - 7 criteria, each gets 1/21 weight
             ['C15', 'Ketinggian (mdpl)', 'cost', 'MOUNTAIN', 'numeric'],
             ['C16', 'Elevasi/Gain (m)', 'cost', 'ROUTE', 'numeric'],
@@ -46,7 +46,7 @@ class SimpleCriteriaSeeder extends Seeder
             ['C20', 'Sumber Air', 'benefit', 'ROUTE', 'ordinal'],
             ['C21', 'Sarana Pendukung', 'benefit', 'ROUTE', 'ordinal'],
         ];
-        
+
         // Insert criteria
         $criteriaRows = [];
         foreach ($criteria as $index => [$code, $name, $type, $source, $dataType]) {
@@ -64,16 +64,16 @@ class SimpleCriteriaSeeder extends Seeder
                 'updated_at' => $now
             ];
         }
-        
+
         DB::table('criteria')->insert($criteriaRows);
-        
+
         // Get criteria IDs
         $criteriaIds = DB::table('criteria')->pluck('id', 'code');
-        
+
         // Set equal weights for all criteria (total = 1)
         $totalCriteria = count($criteria);
         $equalWeight = 1.0 / $totalCriteria; // Each criterion gets 1/21 weight
-        
+
         $weightRows = [];
         foreach ($criteriaIds as $code => $id) {
             $weightRows[] = [
@@ -84,9 +84,9 @@ class SimpleCriteriaSeeder extends Seeder
                 'updated_at' => $now
             ];
         }
-        
+
         DB::table('criterion_weights')->insert($weightRows);
-        
+
         echo "✅ Simple criteria seeder completed!\n";
         echo "📊 Total criteria: " . $totalCriteria . "\n";
         echo "⚖️ Equal weight per criterion: " . number_format($equalWeight, 4) . "\n";

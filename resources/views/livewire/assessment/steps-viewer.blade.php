@@ -81,7 +81,20 @@
             @else
                 <div class="space-y-6">
                     @foreach($fuzzySteps as $step)
-                        @php $stepData = json_decode($step->payload, true); @endphp
+                        @php
+                            // Ensure payload is array (handle both casted and non-casted cases)
+                            $stepData = is_string($step->payload)
+                                ? json_decode($step->payload, true) ?? []
+                                : $step->payload;
+
+                            // Ensure nested arrays are decoded if still strings
+                            if (isset($stepData['memberships']) && is_string($stepData['memberships'])) {
+                                $stepData['memberships'] = json_decode($stepData['memberships'], true) ?? [];
+                            }
+                            if (isset($stepData['terms']) && is_string($stepData['terms'])) {
+                                $stepData['terms'] = json_decode($stepData['terms'], true) ?? [];
+                            }
+                        @endphp
                         <div class="border border-gray-200 rounded-lg p-4">
                             <h4 class="font-semibold text-gray-800 mb-3">
                                 {{ $stepData['criterion_code'] }} - {{ $stepData['criterion_name'] }}
@@ -119,7 +132,7 @@
                                                 <div class="font-medium">{{ $term['label'] }} ({{ $term['code'] }})</div>
                                                 <div class="text-gray-500">{{ $term['shape'] }}</div>
                                                 <div class="font-mono text-xs mt-1">
-                                                    @php $params = json_decode($term['params_json'], true); @endphp
+                                                    @php $params = is_string($term['params_json']) ? json_decode($term['params_json'], true) : $term['params_json']; @endphp
                                                     [{{ implode(', ', $params) }}]
                                                 </div>
                                             </div>
@@ -146,16 +159,6 @@
                                             $maxX = 5;
                                             $scaleX = $chartWidth / ($maxX - $minX);
 
-                                            // Helper function to convert x-coordinate
-                                            function toSvgX($x, $minX, $scaleX, $padding) {
-                                                return $padding + ($x - $minX) * $scaleX;
-                                            }
-
-                                            // Helper function to convert y-coordinate (membership degree)
-                                            function toSvgY($mu, $chartHeight, $padding) {
-                                                return $padding + $chartHeight * (1 - $mu);
-                                            }
-
                                             // Colors for terms
                                             $colors = [
                                                 'RENDAH' => '#ef4444',  // red
@@ -167,7 +170,7 @@
                                         <svg width="{{ $width }}" height="{{ $height }}" class="border border-gray-300 bg-white rounded">
                                             {{-- Grid lines --}}
                                             @for($i = 1; $i <= 5; $i++)
-                                                @php $x = toSvgX($i, $minX, $scaleX, $padding); @endphp
+                                                @php $x = $padding + ($i - $minX) * $scaleX; @endphp
                                                 <line x1="{{ $x }}" y1="{{ $padding }}" x2="{{ $x }}" y2="{{ $height - $padding }}"
                                                       stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2,2"/>
                                                 <text x="{{ $x }}" y="{{ $height - $padding + 15 }}" text-anchor="middle"
@@ -178,7 +181,7 @@
                                             @for($i = 0; $i <= 4; $i++)
                                                 @php
                                                     $mu = $i / 4;
-                                                    $y = toSvgY($mu, $chartHeight, $padding);
+                                                    $y = $padding + $chartHeight * (1 - $mu);
                                                 @endphp
                                                 <line x1="{{ $padding - 5 }}" y1="{{ $y }}" x2="{{ $padding }}" y2="{{ $y }}"
                                                       stroke="#6b7280"/>
@@ -195,17 +198,17 @@
                                             {{-- Draw triangular membership functions --}}
                                             @foreach($stepData['terms'] as $term)
                                                 @php
-                                                    $params = json_decode($term['params_json'], true);
+                                                    $params = is_string($term['params_json']) ? json_decode($term['params_json'], true) : $term['params_json'];
                                                     $a = $params[0]; // left
                                                     $b = $params[1]; // peak
                                                     $c = $params[2]; // right
 
-                                                    $x1 = toSvgX($a, $minX, $scaleX, $padding);
-                                                    $x2 = toSvgX($b, $minX, $scaleX, $padding);
-                                                    $x3 = toSvgX($c, $minX, $scaleX, $padding);
+                                                    $x1 = $padding + ($a - $minX) * $scaleX;
+                                                    $x2 = $padding + ($b - $minX) * $scaleX;
+                                                    $x3 = $padding + ($c - $minX) * $scaleX;
 
-                                                    $y_bottom = toSvgY(0, $chartHeight, $padding);
-                                                    $y_top = toSvgY(1, $chartHeight, $padding);
+                                                    $y_bottom = $padding + $chartHeight * (1 - 0);
+                                                    $y_top = $padding + $chartHeight * (1 - 1);
 
                                                     $color = $colors[$term['code']] ?? '#6b7280';
                                                     $membership = $memberships[$term['label']] ?? 0;
@@ -232,7 +235,7 @@
 
                                             {{-- User input line --}}
                                             @if($rawInput !== null && is_numeric($rawInput))
-                                                @php $inputX = toSvgX($rawInput, $minX, $scaleX, $padding); @endphp
+                                                @php $inputX = $padding + ($rawInput - $minX) * $scaleX; @endphp
                                                 <line x1="{{ $inputX }}" y1="{{ $padding }}" x2="{{ $inputX }}" y2="{{ $height - $padding }}"
                                                       stroke="#dc2626" stroke-width="3" stroke-dasharray="5,5"/>
                                                 <text x="{{ $inputX }}" y="{{ $padding - 5 }}" text-anchor="middle"
@@ -241,7 +244,7 @@
 
                                             {{-- Defuzzified value line --}}
                                             @if($defuzzValue !== null && is_numeric($defuzzValue))
-                                                @php $defuzzX = toSvgX($defuzzValue, $minX, $scaleX, $padding); @endphp
+                                                @php $defuzzX = $padding + ($defuzzValue - $minX) * $scaleX; @endphp
                                                 <line x1="{{ $defuzzX }}" y1="{{ $padding }}" x2="{{ $defuzzX }}" y2="{{ $height - $padding }}"
                                                       stroke="#059669" stroke-width="3"/>
                                                 <text x="{{ $defuzzX }}" y="{{ $padding - 5 }}" text-anchor="middle"

@@ -14,6 +14,10 @@ use App\Livewire\Assessment\UserWizard;
 Route::get('/', [LandingController::class,'index'])->name('landing');
 Route::post('/start', [LandingController::class,'start'])->name('landing.start');
 
+// API Endpoint for external integration (muncak.id)
+Route::get('/api/test-recommendation/{mountainId}', [LandingController::class,'testRecommendation'])->name('api.test-recommendation');
+Route::post('/api/start-assessment', [LandingController::class,'startAssessmentApi'])->name('api.start-assessment');
+
 // CSRF token endpoint
 Route::get('/csrf-token', function() {
     return response()->json(['csrf_token' => csrf_token()]);
@@ -99,6 +103,7 @@ Route::middleware(['auth','role:admin|editor'])->prefix('admin')->name('admin.')
         Route::get('/criterion-weights', \App\Livewire\Admin\CriterionWeightsCrud::class)->name('criterion-weights');
         Route::get('/category-maps', \App\Livewire\Admin\CategoryMapsCrud::class)->name('categorymaps');
         Route::get('/constraints', \App\Livewire\Admin\ConstraintsCrud::class)->name('constraints');
+        Route::get('/fuzzy-terms', \App\Livewire\Admin\FuzzyTermsCrud::class)->name('fuzzy-terms');
 
         // Import functionality
         Route::post('/routes/import', [\App\Http\Controllers\Admin\ImportController::class,'routes'])->name('routes.import');

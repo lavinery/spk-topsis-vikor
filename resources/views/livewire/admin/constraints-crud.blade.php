@@ -8,20 +8,20 @@
 
     <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-bold">Constraints</h1>
-        <input type="text" wire:model.live="q" placeholder="Cari..." class="rounded-lg border-gray-300">
+        <input type="text" wire:model.live="q" placeholder="Cari..." class="w-72 px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent">
     </div>
 
-    <div class="bg-white border rounded-2xl p-4">
+    <div class="ui-card">
         <form wire:submit.prevent="save" class="space-y-4">
             <div class="grid md:grid-cols-2 gap-4">
-                <div>
-                    <label class="text-sm">Nama Constraint</label>
-                    <input type="text" wire:model="name" class="mt-1 w-full rounded-lg border-gray-300" placeholder="CardioHigh_vs_Slope">
+                <div class="ui-field">
+                    <label class="ui-label">Nama Constraint</label>
+                    <input type="text" wire:model="name" class="w-full" placeholder="CardioHigh_vs_Slope">
                     @error('name') <div class="text-xs text-rose-600">{{ $message }}</div> @enderror
                 </div>
-                <div>
-                    <label class="text-sm">Action</label>
-                    <select wire:model="action" class="mt-1 w-full rounded-lg border-gray-300">
+                <div class="ui-field">
+                    <label class="ui-label">Action</label>
+                    <select wire:model="action" class="w-full">
                         <option value="exclude_alternative">Exclude Alternative</option>
                         <option value="warn_only">Warn Only</option>
                     </select>
@@ -29,17 +29,17 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-2">
-                <input id="active" type="checkbox" wire:model="active" class="rounded border-gray-300">
+            <div class="ui-field flex items-center gap-2">
+                <input id="active" type="checkbox" wire:model="active">
                 <label for="active" class="text-sm">Active</label>
             </div>
             
-            <div>
-                <label class="text-sm">Expression JSON</label>
+            <div class="ui-field">
+                <label class="ui-label">Expression JSON</label>
                 <div class="mt-1 text-xs text-gray-600 mb-2">
                     Format: {"field": "user.C3", "op": "eq", "value": "high", "then": {"field": "route.slope_class", "op": "lte", "value": 3}}
                 </div>
-                <textarea wire:model="expr_json" rows="8" class="w-full rounded-lg border-gray-300 font-mono text-sm" placeholder='{"field": "user.C3", "op": "eq", "value": "high", "then": {"field": "route.slope_class", "op": "lte", "value": 3}}'></textarea>
+                <textarea wire:model="expr_json" rows="8" class="w-full font-mono text-sm" placeholder='{"field": "user.C3", "op": "eq", "value": "high", "then": {"field": "route.slope_class", "op": "lte", "value": 3}}'></textarea>
                 @error('expr_json') <div class="text-xs text-rose-600">{{ $message }}</div> @enderror
             </div>
             
@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <div class="mt-6 bg-white border rounded-2xl overflow-hidden">
+    <div class="mt-6 bg-white rounded-xl border border-neutral-line overflow-hidden">
         <table class="min-w-full text-sm">
             <thead class="bg-gray-50">
                 <tr class="text-left">

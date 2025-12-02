@@ -26,21 +26,59 @@
                class="w-full max-w-md px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent">
     </div>
 
-    <!-- Total Weight Info -->
-    <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <div class="flex items-center justify-between">
-            <span class="text-blue-800 font-medium">Total Bobot Saat Ini:</span>
-            <span class="text-blue-900 font-bold text-lg">{{ number_format($totalWeight, 4) }}</span>
+    <!-- Weight Info Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- Total Weight -->
+        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div class="flex items-center justify-between">
+                <span class="text-blue-800 font-medium">Total Bobot:</span>
+                <span class="text-blue-900 font-bold text-lg">{{ number_format($totalWeight, 4) }}</span>
+            </div>
+            @if(abs($totalWeight - 1.0) > 0.001)
+                <p class="text-blue-700 text-sm mt-1">
+                    ⚠️ Tidak sama dengan 1.0
+                </p>
+            @else
+                <p class="text-green-700 text-sm mt-1">
+                    ✅ Sudah normal (1.0)
+                </p>
+            @endif
         </div>
-        @if(abs($totalWeight - 1.0) > 0.001)
-            <p class="text-blue-700 text-sm mt-1">
-                ⚠️ Total bobot tidak sama dengan 1.0. Klik "Normalisasi Bobot" untuk menyesuaikan.
-            </p>
-        @else
-            <p class="text-green-700 text-sm mt-1">
-                ✅ Total bobot sudah normal (1.0)
-            </p>
-        @endif
+
+        <!-- Remaining Weight -->
+        <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div class="flex items-center justify-between">
+                <span class="text-green-800 font-medium">Sisa Bobot:</span>
+                <span class="text-green-900 font-bold text-lg">{{ number_format($remainingWeight, 4) }}</span>
+            </div>
+            @if($remainingWeight > 0)
+                <p class="text-green-700 text-sm mt-1">
+                    📊 Masih bisa ditambahkan
+                </p>
+            @elseif($remainingWeight < 0)
+                <p class="text-red-700 text-sm mt-1">
+                    ⚠️ Melebihi batas maksimal
+                </p>
+            @else
+                <p class="text-gray-700 text-sm mt-1">
+                    ✅ Sudah penuh
+                </p>
+            @endif
+        </div>
+
+        <!-- Percentage -->
+        <div class="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+            <div class="flex items-center justify-between">
+                <span class="text-purple-800 font-medium">Persentase:</span>
+                <span class="text-purple-900 font-bold text-lg">{{ number_format($totalWeight * 100, 1) }}%</span>
+            </div>
+            <div class="mt-2">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                         style="width: {{ min(100, $totalWeight * 100) }}%"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Form -->
@@ -62,10 +100,24 @@
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-neutral-text mb-2">Bobot (0-1)</label>
-                <input type="number" wire:model="weight" step="0.001" min="0" max="1"
-                       class="w-full px-3 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent">
+                <label class="block text-sm font-medium text-neutral-text mb-2">
+                    Bobot (0-1)
+                    @if($remainingWeight > 0 && !$editingId)
+                        <span class="text-green-600 text-xs font-normal">
+                            • Sisa: {{ number_format($remainingWeight, 4) }}
+                        </span>
+                    @endif
+                </label>
+                <input type="number" wire:model.live="weight" step="0.001" min="0" max="{{ $editingId ? 1 : $remainingWeight }}"
+                       class="w-full px-3 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
+                       placeholder="Masukkan bobot (contoh: 0.05)">
                 @error('weight') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+
+                @if($weight && $remainingWeight < $weight && !$editingId)
+                    <div class="mt-1 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                        ⚠️ Bobot yang dimasukkan ({{ $weight }}) melebihi sisa yang tersedia ({{ number_format($remainingWeight, 4) }})
+                    </div>
+                @endif
             </div>
             
             <div>
@@ -77,14 +129,20 @@
         </div>
         
         <div class="flex gap-2 mt-4">
-            <button wire:click="save" 
-                    class="px-4 py-2 bg-brand text-white rounded-lg hover:bg-indigo-700 transition-colors">
+            <button wire:click="save"
+                    @if(!$editingId && $weight > $remainingWeight) disabled @endif
+                    class="px-4 py-2 bg-brand text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
                 {{ $editingId ? 'Update' : 'Simpan' }}
             </button>
-            <button wire:click="resetForm" 
+            <button wire:click="resetForm"
                     class="px-4 py-2 border border-neutral-line text-neutral-text rounded-lg hover:bg-gray-50 transition-colors">
                 Reset
             </button>
+            @if(!$editingId && $remainingWeight <= 0)
+                <span class="px-4 py-2 text-sm text-orange-600 bg-orange-50 border border-orange-200 rounded-lg">
+                    ⚠️ Total bobot sudah mencapai 1.0. Gunakan "Normalisasi Bobot" untuk menyesuaikan.
+                </span>
+            @endif
         </div>
     </div>
 

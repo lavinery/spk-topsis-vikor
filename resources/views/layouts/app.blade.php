@@ -81,51 +81,16 @@
             @yield('content')
         </main>
 
-        <!-- Footer -->
-        <footer class="border border-neutral-line-t border border-neutral-line-neutral-line bg-white border border-neutral-line border border-neutral-line-neutral-line mt-20">
-            <div class="max-w-7xl mx-auto py-10 px-4">
-                <div class="text-center">
-                    <div class="flex justify-center items-center gap-4 mb-6">
-                        <div class="w-12 h-12 bg-brand rounded border border-neutral-line-2xl flex items-center justify-center text-2xl text-neutral-text">
-                            🏔️
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-semibold text-neutral-text">SPK-TOPSIS</h3>
-                            <p class="text-sm text-neutral-sub">Sistem Pendukung Keputusan</p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="p-4 rounded border border-neutral-line-lg border border-neutral-line border border-neutral-line-neutral-line">
-                            <div class="text-2xl mb-2">🎯</div>
-                            <h4 class="font-semibold text-neutral-text mb-1">Smart Recommendations</h4>
-                            <p class="text-sm text-neutral-sub">Rekomendasi jalur gunung berdasarkan profil Anda</p>
-                        </div>
-                        
-                        <div class="p-4 rounded border border-neutral-line-lg border border-neutral-line border border-neutral-line-neutral-line">
-                            <div class="text-2xl mb-2">⚡</div>
-                            <h4 class="font-semibold text-neutral-text mb-1">TOPSIS Algorithm</h4>
-                            <p class="text-sm text-neutral-sub">Algoritma pengambilan keputusan untuk seleksi jalur optimal</p>
-                        </div>
-                        
-                        <div class="p-4 rounded border border-neutral-line-lg border border-neutral-line border border-neutral-line-neutral-line">
-                            <div class="text-2xl mb-2">🌟</div>
-                            <h4 class="font-semibold text-neutral-text mb-1">Modern Interface</h4>
-                            <p class="text-sm text-neutral-sub">Antarmuka modern dan intuitif</p>
-                        </div>
-                    </div>
-                    
-                    <div class="border border-neutral-line-t border border-neutral-line-neutral-line pt-6">
-                        <p class="text-sm text-neutral-sub mb-1">
-                            &copy; {{ date('Y') }} SPK-TOPSIS - Sistem Pendukung Keputusan Rekomendasi Jalur Gunung
-                        </p>
-                        <p class="text-xs text-neutral-sub">
-                            Powered by Laravel & TOPSIS Algorithm
-                        </p>
-                    </div>
+        <!-- Simple Footer for Admin Pages -->
+        @if(!request()->is('/'))
+        <footer class="bg-gray-50 border-t border-gray-200 mt-auto">
+            <div class="max-w-7xl mx-auto px-4 py-6">
+                <div class="text-center text-sm text-gray-500">
+                    <p>&copy; {{ date('Y') }} SPK Pendakian - Powered by Laravel & TOPSIS Algorithm</p>
                 </div>
             </div>
         </footer>
+        @endif
     </div>
 
     <!-- Livewire Scripts -->

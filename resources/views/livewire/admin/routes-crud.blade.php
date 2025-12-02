@@ -9,7 +9,7 @@
     <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-bold">Routes</h1>
         <div class="flex items-center gap-3">
-            <input type="text" wire:model.live="q" placeholder="Cari..." class="rounded-lg border-gray-300">
+            <input type="text" wire:model.live="q" placeholder="Cari..." class="w-72 px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent">
         </div>
     </div>
 
@@ -47,47 +47,47 @@
         </div>
     </div>
 
-    <div class="bg-white border rounded-2xl p-4">
+    <div class="ui-card">
         <form wire:submit.prevent="save" class="grid md:grid-cols-3 gap-4">
-            <div>
-                <label class="text-sm">Gunung</label>
-                <select wire:model="mountain_id" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Gunung</label>
+                <select wire:model="mountain_id" class="w-full">
                     <option value="">-- pilih --</option>
                     @foreach ($mountains as $m) <option value="{{ $m->id }}">{{ $m->name }}</option> @endforeach
                 </select>
                 @error('mountain_id') <div class="text-xs text-rose-600">{{ $message }}</div> @enderror
             </div>
-            <div>
-                <label class="text-sm">Nama Jalur</label>
-                <input type="text" wire:model="name" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Nama Jalur</label>
+                <input type="text" wire:model="name" class="w-full">
                 @error('name') <div class="text-xs text-rose-600">{{ $message }}</div> @enderror
             </div>
-            <div>
-                <label class="text-sm">Panjang (km)</label>
-                <input type="number" step="0.01" wire:model="distance_km" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Panjang (km)</label>
+                <input type="number" step="0.01" wire:model="distance_km" class="w-full">
             </div>
-            <div>
-                <label class="text-sm">Elevasi (m)</label>
-                <input type="number" wire:model="elevation_gain_m" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Elevasi (m)</label>
+                <input type="number" wire:model="elevation_gain_m" class="w-full">
             </div>
-            <div>
-                <label class="text-sm">Kelas Kecuraman (1–5)</label>
-                <input type="number" min="1" max="5" wire:model="slope_class" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Kelas Kecuraman (1–5)</label>
+                <input type="number" min="1" max="5" wire:model="slope_class" class="w-full">
             </div>
-            <div>
-                <label class="text-sm">Tutupan Lahan (key)</label>
-                <input type="text" wire:model="land_cover_key" class="mt-1 w-full rounded-lg border-gray-300" placeholder="hutan-lebat / savana / ...">
+            <div class="ui-field">
+                <label class="ui-label">Tutupan Lahan (key)</label>
+                <input type="text" wire:model="land_cover_key" class="w-full" placeholder="hutan-lebat / savana / ...">
             </div>
-            <div>
-                <label class="text-sm">Sumber Air (0–10)</label>
-                <input type="number" min="0" max="10" wire:model="water_sources_score" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Sumber Air (0–10)</label>
+                <input type="number" min="0" max="10" wire:model="water_sources_score" class="w-full">
             </div>
-            <div>
-                <label class="text-sm">Sarana Pendukung (0–10)</label>
-                <input type="number" min="0" max="10" wire:model="support_facility_score" class="mt-1 w-full rounded-lg border-gray-300">
+            <div class="ui-field">
+                <label class="ui-label">Sarana Pendukung (0–10)</label>
+                <input type="number" min="0" max="10" wire:model="support_facility_score" class="w-full">
             </div>
-            <div class="flex items-center gap-2">
-                <input id="permit" type="checkbox" wire:model="permit_required" class="rounded border-gray-300">
+            <div class="ui-field flex items-center gap-2">
+                <input id="permit" type="checkbox" wire:model="permit_required">
                 <label for="permit" class="text-sm">Perlu Izin</label>
             </div>
             <div class="md:col-span-3 flex items-center gap-2">
@@ -100,7 +100,7 @@
         </form>
     </div>
 
-    <div class="mt-6 bg-white border rounded-2xl overflow-hidden">
+    <div class="mt-6 bg-white rounded-xl border border-neutral-line overflow-hidden">
         <table class="min-w-full text-sm">
             <thead class="bg-gray-50">
                 <tr class="text-left">
