@@ -35,7 +35,15 @@ Route::post('/login', function (\Illuminate\Http\Request $request) {
 
     if (\Illuminate\Support\Facades\Auth::attempt($credentials)) {
         $request->session()->regenerate();
-        return redirect()->intended('/');
+
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        // Redirect based on role
+        if ($user->hasRole('admin') || $user->hasRole('editor')) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('user.dashboard');
     }
 
     return back()->withErrors([
@@ -83,20 +91,27 @@ Route::middleware(['auth'])->group(function(){
 });
 
 // Admin Panel Routes
-Route::middleware(['auth','role:admin|editor'])->prefix('admin')->name('admin.')->group(function(){
+Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(function(){
     Route::view('/','admin.dashboard')->name('dashboard');
 
-            // CRUD master
-        Route::get('/mountains', \App\Livewire\Admin\MountainsCrud::class)->name('mountains');
-        Route::get('/routes', \App\Livewire\Admin\RoutesCrud::class)->name('routes');
-        Route::get('/criteria', \App\Livewire\Admin\CriteriaCrud::class)->name('criteria');
-        Route::get('/criterion-weights', \App\Livewire\Admin\CriterionWeightsCrud::class)->name('criterion-weights');
-        Route::get('/category-maps', \App\Livewire\Admin\CategoryMapsCrud::class)->name('categorymaps');
-        Route::get('/fuzzy-terms', \App\Livewire\Admin\FuzzyTermsCrud::class)->name('fuzzy-terms');
+    // CRUD master
+    Route::get('/mountains', \App\Livewire\Admin\MountainsCrud::class)->name('mountains');
+    Route::get('/routes', \App\Livewire\Admin\RoutesCrud::class)->name('routes');
+    Route::get('/criteria', \App\Livewire\Admin\CriteriaCrud::class)->name('criteria');
+    Route::get('/criterion-weights', \App\Livewire\Admin\CriterionWeightsCrud::class)->name('criterion-weights');
+    Route::get('/category-maps', \App\Livewire\Admin\CategoryMapsCrud::class)->name('categorymaps');
+    Route::get('/fuzzy-terms', \App\Livewire\Admin\FuzzyTermsCrud::class)->name('fuzzy-terms');
 
-        // Import functionality
-        Route::post('/routes/import', [\App\Http\Controllers\Admin\ImportController::class,'routes'])->name('routes.import');
+    // Import functionality
+    Route::post('/routes/import', [\App\Http\Controllers\Admin\ImportController::class,'routes'])->name('routes.import');
 
     // Monitoring assessments
     Route::get('/assessments', \App\Livewire\Admin\AssessmentsMonitor::class)->name('assessments');
+});
+
+// User Panel Routes
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function(){
+    Route::view('/','user.dashboard')->name('dashboard');
+    Route::get('/history', \App\Livewire\User\AssessmentHistory::class)->name('history');
+    Route::get('/assessment/{id}/detail', \App\Livewire\User\AssessmentDetail::class)->name('assessment.detail');
 });

@@ -67,6 +67,7 @@
                         <div class="flex-1">
                             <div class="text-sm text-brand font-medium mb-1" x-text="s.code"></div>
                             <div class="text-lg font-semibold text-neutral-text" x-text="s.name"></div>
+                            <div class="text-sm text-neutral-sub mt-2 italic" x-text="getQuestionHint(s.code, s.name)"></div>
                         </div>
                     </div>
 
@@ -230,6 +231,27 @@
     <script>
     function wizard() {
         return {
+            // Helper function to get question hints
+            getQuestionHint(code, name) {
+                const hints = {
+                    'C1': 'Berapa usia Anda saat ini?',
+                    'C2': 'Seberapa sering Anda berolahraga dan seberapa baik kebugaran fisik Anda?',
+                    'C3': 'Apakah Anda memiliki riwayat penyakit jantung atau kardiovaskular?',
+                    'C4': 'Apakah Anda memiliki riwayat penyakit pernapasan seperti asma?',
+                    'C5': 'Seberapa lengkap peralatan pendakian yang Anda miliki?',
+                    'C6': 'Seberapa baik pengetahuan P3K (Pertolongan Pertama Pada Kecelakaan) Anda?',
+                    'C7': 'Apa yang memotivasi Anda dalam naik gunung?',
+                    'C8': 'Berapa kali Anda sudah pernah mendaki gunung sebelumnya?',
+                    'C9': 'Seberapa detail perencanaan logistik pendakian Anda?',
+                    'C10': 'Seberapa mahir Anda menggunakan alat-alat pendakian?',
+                    'C11': 'Seberapa baik kemampuan survival Anda di alam bebas?',
+                    'C12': 'Seberapa siap tim pendakian Anda?',
+                    'C13': 'Apakah Anda akan didampingi pemandu gunung profesional?',
+                    'C14': 'Bagaimana pembagian tugas dalam tim pendakian Anda?'
+                };
+                return hints[code] || 'Pilih nilai yang paling sesuai dengan kondisi Anda.';
+            },
+
             // Helper function for scale descriptions
             getScaleDescription(value) {
                 const descriptions = {
