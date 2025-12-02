@@ -66,6 +66,6 @@ class AssessmentDetail extends Component
 
     public function render()
     {
-        return view('livewire.user.assessment-detail');
+        return view('livewire.user.assessment-detail')->layout('layouts.app');
     }
 }

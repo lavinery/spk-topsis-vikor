@@ -37,6 +37,6 @@ class AssessmentHistory extends Component
 
         return view('livewire.user.assessment-history', [
             'assessments' => $assessments
-        ]);
+        ])->layout('layouts.app');
     }
 }
