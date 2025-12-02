@@ -12,6 +12,24 @@ class AssessmentsMonitor extends Component
     use WithPagination;
     public string $q = '';
 
+    public function delete($id)
+    {
+        $assessment = Assessment::find($id);
+
+        if ($assessment) {
+            // Delete related data
+            $assessment->answers()->delete();
+            $assessment->alternatives()->delete();
+            $assessment->steps()->delete();
+            $assessment->snapshot()->delete();
+
+            // Delete assessment
+            $assessment->delete();
+
+            session()->flash('message', 'Assessment berhasil dihapus.');
+        }
+    }
+
     public function render()
     {
         $list = Assessment::when($this->q, fn($q)=>$q->where('title','like','%'.$this->q.'%'))
