@@ -92,7 +92,6 @@ Route::middleware(['auth','role:admin|editor'])->prefix('admin')->name('admin.')
         Route::get('/criteria', \App\Livewire\Admin\CriteriaCrud::class)->name('criteria');
         Route::get('/criterion-weights', \App\Livewire\Admin\CriterionWeightsCrud::class)->name('criterion-weights');
         Route::get('/category-maps', \App\Livewire\Admin\CategoryMapsCrud::class)->name('categorymaps');
-        Route::get('/constraints', \App\Livewire\Admin\ConstraintsCrud::class)->name('constraints');
         Route::get('/fuzzy-terms', \App\Livewire\Admin\FuzzyTermsCrud::class)->name('fuzzy-terms');
 
         // Import functionality
