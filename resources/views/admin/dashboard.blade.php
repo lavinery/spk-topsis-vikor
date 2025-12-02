@@ -3,29 +3,33 @@
 @section('content')
 <div class="min-h-screen bg-gray-50">
     <!-- Hero Section -->
-    <div class="bg-white border-b-2 border-gray-100 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 py-10">
+    <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 text-white border-b-4 border-indigo-900">
+        <div class="max-w-7xl mx-auto px-4 py-12">
             <!-- Back Button -->
-            <div class="mb-6">
-                <x-back-button href="{{ route('landing') }}" text="Kembali ke Beranda" />
+            <div class="mb-8">
+                <a href="{{ route('landing') }}" class="inline-flex items-center gap-2 text-indigo-100 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    <span class="font-medium">Kembali ke Beranda</span>
+                </a>
             </div>
 
-            <div class="text-center mb-8">
+            <div class="text-center">
                 <div class="flex justify-center mb-6">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center text-2xl">
+                    <div class="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center text-4xl shadow-xl">
                         🔧
                     </div>
                 </div>
 
-                <h1 class="text-3xl font-bold text-gray-900 mb-4">
+                <h1 class="text-4xl font-bold mb-4">
                     Admin Dashboard
                 </h1>
-                <p class="text-lg text-gray-600 mb-4">
-                    Manage your SPK-TOPSIS system
+                <p class="text-xl text-indigo-100 mb-4">
+                    Kelola Sistem SPK-TOPSIS Anda
                 </p>
-                <p class="text-gray-600 max-w-2xl mx-auto">
-                    Welcome back, <span class="text-indigo-600 font-semibold">{{ auth()->user()->name }}</span>!
-                    Ready to manage the system?
+                <p class="text-indigo-100 max-w-2xl mx-auto">
+                    Selamat datang kembali, <span class="text-white font-bold">{{ auth()->user()->name }}</span>! 🎉
                 </p>
             </div>
         </div>
@@ -33,45 +37,81 @@
 
     <!-- Dashboard Cards -->
     <div class="max-w-7xl mx-auto px-4 py-10">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Menu Utama</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Monitoring -->
-            <a href="{{ route('admin.assessments') }}" class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:border-indigo-300 text-center group">
-                <div class="text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">📊</div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Monitoring</h3>
-                <p class="text-gray-600 mb-4 text-sm">Track all assessments and their results</p>
-                <div class="text-indigo-600 font-semibold text-sm">View Assessments →</div>
+            <a href="{{ route('admin.assessments') }}" class="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 hover:border-indigo-500 hover:-translate-y-1">
+                <div class="absolute top-6 right-6 w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                    📊
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3 pr-16">Monitoring</h3>
+                <p class="text-gray-600 mb-4 text-sm leading-relaxed">Pantau semua assessment dan hasilnya secara real-time</p>
+                <div class="flex items-center text-indigo-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                    <span>Lihat Assessment</span>
+                    <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
             </a>
 
             <!-- Master Data -->
-            <a href="{{ route('admin.routes') }}" class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:border-indigo-300 text-center group">
-                <div class="text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">🏔️</div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Master Data</h3>
-                <p class="text-gray-600 mb-4 text-sm">Manage mountains, routes, and criteria</p>
-                <div class="text-indigo-600 font-semibold text-sm">Manage Routes →</div>
+            <a href="{{ route('admin.routes') }}" class="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 hover:border-green-500 hover:-translate-y-1">
+                <div class="absolute top-6 right-6 w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                    🏔️
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3 pr-16">Data Jalur</h3>
+                <p class="text-gray-600 mb-4 text-sm leading-relaxed">Kelola data gunung, jalur pendakian, dan kriteria</p>
+                <div class="flex items-center text-green-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                    <span>Kelola Jalur</span>
+                    <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
             </a>
 
             <!-- Configuration -->
-            <a href="{{ route('admin.criteria') }}" class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:border-indigo-300 text-center group">
-                <div class="text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">⚙️</div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Criteria</h3>
-                <p class="text-gray-600 mb-4 text-sm">Manage criteria definitions</p>
-                <div class="text-indigo-600 font-semibold text-sm">Manage Criteria →</div>
+            <a href="{{ route('admin.criteria') }}" class="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 hover:border-purple-500 hover:-translate-y-1">
+                <div class="absolute top-6 right-6 w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                    ⚙️
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3 pr-16">Kriteria</h3>
+                <p class="text-gray-600 mb-4 text-sm leading-relaxed">Atur definisi kriteria untuk perhitungan TOPSIS</p>
+                <div class="flex items-center text-purple-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                    <span>Kelola Kriteria</span>
+                    <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
             </a>
 
             <!-- Criterion Weights -->
-            <a href="{{ route('admin.criterion-weights') }}" class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:border-indigo-300 text-center group">
-                <div class="text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">⚖️</div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Criterion Weights</h3>
-                <p class="text-gray-600 mb-4 text-sm">Set weights for TOPSIS calculation</p>
-                <div class="text-indigo-600 font-semibold text-sm">Manage Weights →</div>
+            <a href="{{ route('admin.criterion-weights') }}" class="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 hover:border-amber-500 hover:-translate-y-1">
+                <div class="absolute top-6 right-6 w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                    ⚖️
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3 pr-16">Bobot Kriteria</h3>
+                <p class="text-gray-600 mb-4 text-sm leading-relaxed">Tentukan bobot untuk perhitungan TOPSIS</p>
+                <div class="flex items-center text-amber-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                    <span>Atur Bobot</span>
+                    <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
             </a>
 
             <!-- Mountains -->
-            <a href="{{ route('admin.mountains') }}" class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:border-indigo-300 text-center group">
-                <div class="text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">⛰️</div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Mountains</h3>
-                <p class="text-gray-600 mb-4 text-sm">Manage mountain database</p>
-                <div class="text-indigo-600 font-semibold text-sm">Manage Mountains →</div>
+            <a href="{{ route('admin.mountains') }}" class="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 hover:border-teal-500 hover:-translate-y-1">
+                <div class="absolute top-6 right-6 w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                    ⛰️
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3 pr-16">Data Gunung</h3>
+                <p class="text-gray-600 mb-4 text-sm leading-relaxed">Kelola database gunung yang tersedia</p>
+                <div class="flex items-center text-teal-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                    <span>Kelola Gunung</span>
+                    <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
             </a>
         </div>
 
