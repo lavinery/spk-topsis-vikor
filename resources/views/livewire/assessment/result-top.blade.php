@@ -287,7 +287,7 @@ async function submitTopsisCalculation(assessmentId) {
         }
         
         // Use fetch API to submit POST request
-        const response = await fetch(`/assessments/${assessmentId}/run-both`, {
+        const response = await fetch(`/assessments/${assessmentId}/run`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

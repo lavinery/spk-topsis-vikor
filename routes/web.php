@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AssessmentRunController;
-use App\Http\Controllers\AssessmentRunBothController;
 use App\Http\Controllers\AssessmentsExportController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\LandingController;
@@ -60,15 +59,6 @@ Route::middleware(['auth'])->group(function(){
         return redirect()->route('landing');
     })->name('assess.index');
     Route::post('/assessments/{id}/run', [AssessmentRunController::class,'run'])->name('assess.run');
-    Route::post('/assessments/{id}/run-both', [AssessmentRunBothController::class,'run'])->name('assess.run.both');
-    // Handle GET requests to run-both endpoint with proper error
-    Route::get('/assessments/{id}/run-both', function($id) {
-        return response()->json([
-            'error' => 'This endpoint only accepts POST requests. Please use the proper form submission.',
-            'redirect_url' => route('assess.result', $id)
-        ], 405);
-    });
-    Route::post('/assessments/{id}/run-topsis', [AssessmentRunBothController::class,'runTopsis'])->name('assess.run.topsis');
     Route::get('/assessments/{id}/result', ResultTop::class)->name('assess.result');
     Route::get('/assessments/{id}/wizard', UserWizard::class)->name('assess.wizard');
     
