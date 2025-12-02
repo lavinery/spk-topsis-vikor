@@ -341,11 +341,53 @@
         </div>
     </footer>
 
+    <!-- Modal Pemilihan Gunung & Jalur -->
+    <div id="mountain-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-modal="true" role="dialog">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="closeModal()"></div>
+
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Pilih Gunung & Jalur Pendakian</h3>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-500">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="mb-4">
+                        <input type="text" id="search-mountain" placeholder="Cari gunung atau jalur..."
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                               onkeyup="filterMountains()">
+                    </div>
+
+                    <div id="mountains-list" class="max-h-96 overflow-y-auto space-y-2">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button onclick="submitWithSelection()"
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Mulai Assessment
+                    </button>
+                    <button onclick="closeModal()"
+                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Batal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Hidden form for creating assessment -->
     <form method="POST" action="{{ route('landing.start') }}" id="assessment-form" style="display: none;">
         @csrf
         <input type="text" name="title" value="{{ old('title', 'Assessment ' . now()->format('Y-m-d H:i')) }}" style="display: none;">
         <input type="number" name="top_k" value="5" style="display: none;">
+        <input type="hidden" name="selected_mountains" id="selected_mountains" value="">
 
         @foreach($userCriteria as $criterion)
             <input type="hidden" name="{{ $criterion->code }}" value="{{ $criterion->default_value ?? '3' }}">
@@ -355,10 +397,91 @@
     </form>
 
     <script>
+        let mountainsData = [];
+        let selectedMountains = new Set();
+
+        // Load mountains data
+        async function loadMountains() {
+            try {
+                const response = await fetch('/api/mountains-list');
+                mountainsData = await response.json();
+                renderMountainsList();
+            } catch (error) {
+                console.error('Error loading mountains:', error);
+            }
+        }
+
+        function renderMountainsList(filter = '') {
+            const container = document.getElementById('mountains-list');
+            const filtered = mountainsData.filter(m =>
+                m.name.toLowerCase().includes(filter.toLowerCase()) ||
+                (m.routes && m.routes.some(r => r.name.toLowerCase().includes(filter.toLowerCase())))
+            );
+
+            container.innerHTML = filtered.map(mountain => `
+                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                    <div class="flex items-center mb-2">
+                        <input type="checkbox"
+                               id="mountain-${mountain.id}"
+                               class="mr-3 w-4 h-4 text-blue-600"
+                               onchange="toggleMountain(${mountain.id})"
+                               ${selectedMountains.has(mountain.id) ? 'checked' : ''}>
+                        <label for="mountain-${mountain.id}" class="font-semibold text-gray-900 cursor-pointer flex-1">
+                            🏔️ ${mountain.name}
+                        </label>
+                        <span class="text-sm text-gray-500">${mountain.routes ? mountain.routes.length : 0} jalur</span>
+                    </div>
+                    ${mountain.routes && mountain.routes.length > 0 ? `
+                        <div class="ml-7 mt-2 space-y-1 text-sm text-gray-600">
+                            ${mountain.routes.map(route => `
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-400">→</span>
+                                    <span>${route.name}</span>
+                                    <span class="text-xs text-gray-400">(${route.distance_km} km)</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function filterMountains() {
+            const search = document.getElementById('search-mountain').value;
+            renderMountainsList(search);
+        }
+
+        function toggleMountain(id) {
+            if (selectedMountains.has(id)) {
+                selectedMountains.delete(id);
+            } else {
+                selectedMountains.add(id);
+            }
+        }
+
         function startAssessment() {
+            document.getElementById('mountain-modal').classList.remove('hidden');
+            if (mountainsData.length === 0) {
+                loadMountains();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('mountain-modal').classList.add('hidden');
+        }
+
+        function submitWithSelection() {
+            if (selectedMountains.size === 0) {
+                alert('Pilih minimal 1 gunung untuk assessment');
+                return;
+            }
+
+            document.getElementById('selected_mountains').value = Array.from(selectedMountains).join(',');
+
             const startBtn = document.getElementById('start-assessment-btn');
             const loadingBtn = document.getElementById('loading-btn');
 
+            closeModal();
             startBtn.style.display = 'none';
             loadingBtn.style.display = 'inline-flex';
 
@@ -369,14 +492,12 @@
                     if (csrfInput) {
                         csrfInput.value = data.csrf_token;
                     }
-
                     setTimeout(() => {
                         document.getElementById('assessment-form').submit();
                     }, 500);
                 })
                 .catch(error => {
                     console.error('Error getting CSRF token:', error);
-
                     const metaToken = document.querySelector('meta[name="csrf-token"]');
                     if (metaToken) {
                         const csrfInput = document.querySelector('input[name="_token"]');
@@ -384,7 +505,6 @@
                             csrfInput.value = metaToken.getAttribute('content');
                         }
                     }
-
                     setTimeout(() => {
                         document.getElementById('assessment-form').submit();
                     }, 500);
@@ -394,7 +514,6 @@
         window.addEventListener('pageshow', function() {
             const startBtn = document.getElementById('start-assessment-btn');
             const loadingBtn = document.getElementById('loading-btn');
-
             startBtn.style.display = 'inline-flex';
             loadingBtn.style.display = 'none';
         });

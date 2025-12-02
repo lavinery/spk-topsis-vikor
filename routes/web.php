@@ -19,6 +19,7 @@ Route::middleware(['auth'])->group(function() {
 // API Endpoint for external integration (muncak.id)
 Route::get('/api/test-recommendation/{mountainId}', [LandingController::class,'testRecommendation'])->name('api.test-recommendation');
 Route::post('/api/start-assessment', [LandingController::class,'startAssessmentApi'])->name('api.start-assessment');
+Route::get('/api/mountains-list', [LandingController::class,'getMountainsList'])->name('api.mountains-list');
 
 // CSRF token endpoint
 Route::get('/csrf-token', function() {
