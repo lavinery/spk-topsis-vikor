@@ -46,7 +46,10 @@
             }
         }
     </script>
-    
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <!-- Livewire Styles -->
     @livewireStyles
 </head>
@@ -59,10 +62,13 @@
                 <div class="flex items-center gap-4 text-sm">
                     @auth
                         <div class="flex items-center gap-3">
-                            <span class="text-neutral-sub">Halo, {{ auth()->user()->name }}</span>
+                            <span class="text-neutral-sub">{{ auth()->user()->name }}</span>
                             @if(auth()->user()->hasRole(['admin', 'editor']))
-                                <a href="{{ route('admin.dashboard') }}" 
-                                   class="text-neutral-sub hover:text-neutral-text">Admin</a>
+                                <a href="{{ route('admin.dashboard') }}"
+                                   class="text-neutral-sub hover:text-neutral-text">Dashboard Admin</a>
+                            @else
+                                <a href="{{ route('user.history') }}"
+                                   class="text-neutral-sub hover:text-neutral-text">Riwayat</a>
                             @endif
                             <form method="POST" action="{{ route('logout') }}" class="inline">
                                 @csrf

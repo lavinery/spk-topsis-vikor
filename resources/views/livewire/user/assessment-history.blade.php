@@ -1,42 +1,17 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Riwayat Assessment - SPK TOPSIS</title>
-    @vite(['resources/css/app.css'])
-    @livewireStyles
-</head>
-<body class="bg-gray-50 text-neutral-text">
-    <div class="min-h-screen">
-        <!-- Navbar -->
-        <nav class="bg-white shadow-sm border-b border-neutral-line">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center gap-4">
-                        <a href="{{ route('user.dashboard') }}" class="text-neutral-sub hover:text-neutral-text">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                            </svg>
-                        </a>
-                        <h1 class="text-xl font-bold text-brand">Riwayat Assessment</h1>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <span class="text-sm text-neutral-sub">{{ auth()->user()->name }}</span>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
-                                Logout
-                            </button>
-                        </form>
-                    </div>
-                </div>
+<div class="min-h-screen bg-gray-50">
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header with Back Button -->
+        <div class="mb-6">
+            <div class="flex items-center gap-3">
+                <a href="{{ route('landing') }}" class="text-neutral-sub hover:text-neutral-text">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </a>
+                <h1 class="text-2xl font-bold text-neutral-text">Riwayat Assessment</h1>
             </div>
-        </nav>
-
-        <!-- Main Content -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        </div>
             <!-- Filters -->
             <div class="bg-white rounded-xl border border-neutral-line shadow-sm p-4 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -132,13 +107,9 @@
                 @endif
             </div>
 
-            <!-- Pagination -->
-            <div class="mt-4">
-                {{ $assessments->links() }}
-            </div>
+        <!-- Pagination -->
+        <div class="mt-4">
+            {{ $assessments->links() }}
         </div>
     </div>
-
-    @livewireScripts
-</body>
-</html>
+</div>
