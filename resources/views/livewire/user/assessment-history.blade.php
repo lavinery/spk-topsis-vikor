@@ -1,20 +1,17 @@
 <div class="min-h-screen bg-gray-50">
-    <!-- Page Header with Back Button -->
-    <div class="bg-white shadow-sm border-b border-neutral-line">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex items-center gap-4">
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header with Back Button -->
+        <div class="mb-6">
+            <div class="flex items-center gap-3">
                 <a href="{{ route('landing') }}" class="text-neutral-sub hover:text-neutral-text">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </a>
-                <h1 class="text-2xl font-bold text-brand">Riwayat Assessment</h1>
+                <h1 class="text-2xl font-bold text-neutral-text">Riwayat Assessment</h1>
             </div>
         </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Filters -->
             <div class="bg-white rounded-xl border border-neutral-line shadow-sm p-4 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
