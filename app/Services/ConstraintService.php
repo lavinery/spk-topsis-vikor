@@ -4,11 +4,21 @@ namespace App\Services;
 
 use App\Models\Assessment;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class ConstraintService
 {
     public function apply(Assessment $a): array
     {
+        // Cek apakah sistem constraints diaktifkan
+        $constraintsEnabled = Cache::get('constraints_system_enabled', true);
+
+        if (!$constraintsEnabled) {
+            // Sistem constraints dinonaktifkan, skip semua proses
+            \Log::info('Constraints system is DISABLED - skipping all constraint checks');
+            return [];
+        }
+
         $rules = DB::table('constraints')->where('active', true)->get();
         // build quick lookup: route attrs + mountain status
         $alt = $a->alternatives()->with('route.mountain')->get();

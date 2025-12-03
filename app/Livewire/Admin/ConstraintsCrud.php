@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Models\Constraint;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Cache;
 
 class ConstraintsCrud extends Component
 {
@@ -13,6 +14,7 @@ class ConstraintsCrud extends Component
     public $name, $expr_json = '{}', $action = 'exclude_alternative', $active = true;
     public ?int $editingId = null;
     public string $q = '';
+    public bool $constraintsEnabled;
 
     protected $rules = [
         'name' => 'required|string|max:200',
@@ -64,12 +66,28 @@ class ConstraintsCrud extends Component
         Constraint::findOrFail($id)->delete();
     }
 
+    public function mount()
+    {
+        // Load global constraints enabled status
+        $this->constraintsEnabled = Cache::get('constraints_system_enabled', true);
+    }
+
+    public function toggleConstraintsSystem()
+    {
+        $this->constraintsEnabled = !$this->constraintsEnabled;
+        Cache::forever('constraints_system_enabled', $this->constraintsEnabled);
+
+        session()->flash('ok', $this->constraintsEnabled
+            ? 'Sistem Constraints DIAKTIFKAN'
+            : 'Sistem Constraints DINONAKTIFKAN');
+    }
+
     public function render()
     {
         $constraints = Constraint::when($this->q, fn($q) => $q->where('name', 'like', '%' . $this->q . '%'))
             ->latest()
             ->paginate(10);
-            
+
         return view('livewire.admin.constraints-crud', compact('constraints'));
     }
 }
