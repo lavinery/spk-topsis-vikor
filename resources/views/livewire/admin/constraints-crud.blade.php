@@ -14,6 +14,36 @@
             <p class="text-sm text-neutral-sub ml-9">Kelola aturan constraint untuk filter alternatif</p>
         </div>
 
+        <!-- Global Constraints Toggle -->
+        <div class="bg-white rounded-xl border-2 {{ $constraintsEnabled ? 'border-green-500' : 'border-gray-300' }} shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-2">
+                        <svg class="w-6 h-6 {{ $constraintsEnabled ? 'text-green-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold {{ $constraintsEnabled ? 'text-green-900' : 'text-gray-700' }}">
+                            Sistem Constraints
+                        </h3>
+                    </div>
+                    <p class="text-sm {{ $constraintsEnabled ? 'text-green-700' : 'text-gray-600' }}">
+                        @if($constraintsEnabled)
+                            ✓ Sistem constraints <strong>AKTIF</strong> - Filter otomatis akan diterapkan saat perhitungan TOPSIS
+                        @else
+                            ○ Sistem constraints <strong>NONAKTIF</strong> - Semua constraints tidak akan dijalankan
+                        @endif
+                    </p>
+                </div>
+                <button
+                    wire:click="toggleConstraintsSystem"
+                    class="relative inline-flex items-center h-12 w-24 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand {{ $constraintsEnabled ? 'bg-green-500' : 'bg-gray-300' }}"
+                >
+                    <span class="sr-only">Toggle constraints system</span>
+                    <span class="inline-block h-10 w-10 transform rounded-full bg-white shadow transition-transform {{ $constraintsEnabled ? 'translate-x-12' : 'translate-x-1' }}"></span>
+                </button>
+            </div>
+        </div>
+
         <!-- Search Bar -->
         <div class="bg-white rounded-xl border border-neutral-line shadow-sm p-4 mb-6">
             <div class="flex items-center gap-3">
