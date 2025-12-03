@@ -15,9 +15,10 @@ final class TopsisService
     /** Jalankan TOPSIS full pipeline dan simpan setiap tahap */
     public function run(Assessment $a): void
     {
-        DB::transaction(function () use ($a) {
-            // status
-            $a->update(['status' => 'running']);
+        try {
+            DB::transaction(function () use ($a) {
+                // status
+                $a->update(['status' => 'running']);
 
             // 0) Ambil daftar alternatif (exclude yang di-flag)
             $alts = $a->alternatives()
@@ -113,7 +114,21 @@ final class TopsisService
                 'n_alternatives' => count($rows),
                 'n_criteria' => count($cols),
             ]);
-        });
+            });
+        } catch (\Exception $e) {
+            // Log error and mark assessment as failed
+            \Log::error('TOPSIS calculation failed', [
+                'assessment_id' => $a->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Update assessment status to failed
+            $a->update(['status' => 'failed']);
+
+            // Re-throw exception for controller to handle
+            throw $e;
+        }
     }
 
     /** Bangun matriks keputusan X (m×n) */

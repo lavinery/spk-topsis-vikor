@@ -23,6 +23,15 @@ class AssessmentHistory extends Component
         $this->resetPage();
     }
 
+    public function mount()
+    {
+        // Log for debugging
+        \Log::info('AssessmentHistory mounted', [
+            'user_id' => auth()->id(),
+            'total_assessments' => Assessment::where('user_id', auth()->id())->count()
+        ]);
+    }
+
     public function render()
     {
         $assessments = Assessment::where('user_id', auth()->id())
@@ -34,6 +43,14 @@ class AssessmentHistory extends Component
             })
             ->latest()
             ->paginate(10);
+
+        // Log assessment counts by status for debugging
+        \Log::info('Assessment query results', [
+            'user_id' => auth()->id(),
+            'total' => $assessments->total(),
+            'status_filter' => $this->statusFilter,
+            'search' => $this->search
+        ]);
 
         return view('livewire.user.assessment-history', [
             'assessments' => $assessments
