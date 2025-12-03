@@ -54,12 +54,21 @@ class AssessmentRunController extends Controller
             // jalankan TOPSIS
             $topsis->run($a);
 
+            // Refresh assessment to get updated status
+            $a->refresh();
+
+            // Verify that calculation completed successfully
+            if ($a->status !== 'done') {
+                throw new \Exception('Perhitungan TOPSIS gagal. Status: ' . $a->status);
+            }
+
             // Check if this is an AJAX request
             if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
                 return response()->json([
                     'success' => true,
                     'message' => 'Perhitungan TOPSIS selesai!',
-                    'redirect_url' => route('assess.result', $a->id)
+                    'redirect_url' => route('assess.result', $a->id),
+                    'status' => $a->status
                 ]);
             }
 
