@@ -34,7 +34,35 @@ class AssessmentHistory extends Component
 
     public function render()
     {
-        $assessments = Assessment::where('user_id', auth()->id())
+        $userId = auth()->id();
+
+        // Debug: Check if user is authenticated
+        if (!$userId) {
+            \Log::error('AssessmentHistory: User not authenticated!');
+        }
+
+        // Debug: Count all assessments for this user
+        $totalCount = Assessment::where('user_id', $userId)->count();
+        \Log::info('AssessmentHistory: Total assessments for user', [
+            'user_id' => $userId,
+            'total_count' => $totalCount
+        ]);
+
+        // Debug: Show all assessments without filters
+        $allAssessments = Assessment::where('user_id', $userId)->get();
+        \Log::info('AssessmentHistory: All assessments', [
+            'user_id' => $userId,
+            'assessments' => $allAssessments->map(function($a) {
+                return [
+                    'id' => $a->id,
+                    'title' => $a->title,
+                    'status' => $a->status,
+                    'created_at' => $a->created_at->toDateTimeString()
+                ];
+            })->toArray()
+        ]);
+
+        $assessments = Assessment::where('user_id', $userId)
             ->when($this->search, function($query) {
                 $query->where('title', 'like', '%' . $this->search . '%');
             })
@@ -46,10 +74,12 @@ class AssessmentHistory extends Component
 
         // Log assessment counts by status for debugging
         \Log::info('Assessment query results', [
-            'user_id' => auth()->id(),
+            'user_id' => $userId,
             'total' => $assessments->total(),
             'status_filter' => $this->statusFilter,
-            'search' => $this->search
+            'search' => $this->search,
+            'current_page' => $assessments->currentPage(),
+            'per_page' => $assessments->perPage()
         ]);
 
         return view('livewire.user.assessment-history', [

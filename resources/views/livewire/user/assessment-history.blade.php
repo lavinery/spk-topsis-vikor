@@ -20,6 +20,23 @@
                 </button>
             </div>
         </div>
+            <!-- Debug Info -->
+            @if(config('app.debug'))
+            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+                <div class="text-xs font-mono">
+                    <div><strong>Debug Info:</strong></div>
+                    <div>User ID: {{ auth()->id() }}</div>
+                    <div>Total Records: {{ $assessments->total() }}</div>
+                    <div>Current Page: {{ $assessments->currentPage() }}</div>
+                    <div>Per Page: {{ $assessments->perPage() }}</div>
+                    <div>Status Filter: {{ $statusFilter }}</div>
+                    <div>Search: {{ $search ?: '(none)' }}</div>
+                    <div>isEmpty: {{ $assessments->isEmpty() ? 'YES' : 'NO' }}</div>
+                    <div>Count: {{ $assessments->count() }}</div>
+                </div>
+            </div>
+            @endif
+
             <!-- Filters -->
             <div class="bg-white rounded-xl border border-neutral-line shadow-sm p-4 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
