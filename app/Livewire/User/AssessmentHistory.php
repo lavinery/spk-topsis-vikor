@@ -35,34 +35,18 @@ class AssessmentHistory extends Component
     public function render()
     {
         $userId = auth()->id();
+        $isAdmin = auth()->user()->hasRole('admin') || auth()->user()->hasRole('editor');
 
-        // Debug: Check if user is authenticated
-        if (!$userId) {
-            \Log::error('AssessmentHistory: User not authenticated!');
+        // Admin bisa lihat SEMUA assessments, user biasa hanya miliknya
+        $query = Assessment::with('user');
+
+        // Jika bukan admin, filter hanya assessment milik user tersebut
+        if (!$isAdmin) {
+            $query->where('user_id', $userId);
         }
 
-        // Debug: Count all assessments for this user
-        $totalCount = Assessment::where('user_id', $userId)->count();
-        \Log::info('AssessmentHistory: Total assessments for user', [
-            'user_id' => $userId,
-            'total_count' => $totalCount
-        ]);
-
-        // Debug: Show all assessments without filters
-        $allAssessments = Assessment::where('user_id', $userId)->get();
-        \Log::info('AssessmentHistory: All assessments', [
-            'user_id' => $userId,
-            'assessments' => $allAssessments->map(function($a) {
-                return [
-                    'id' => $a->id,
-                    'title' => $a->title,
-                    'status' => $a->status,
-                    'created_at' => $a->created_at->toDateTimeString()
-                ];
-            })->toArray()
-        ]);
-
-        $assessments = Assessment::where('user_id', $userId)
+        // Apply search dan status filter
+        $assessments = $query
             ->when($this->search, function($query) {
                 $query->where('title', 'like', '%' . $this->search . '%');
             })
@@ -72,18 +56,18 @@ class AssessmentHistory extends Component
             ->latest()
             ->paginate(10);
 
-        // Log assessment counts by status for debugging
+        // Log for debugging
         \Log::info('Assessment query results', [
             'user_id' => $userId,
+            'is_admin' => $isAdmin,
             'total' => $assessments->total(),
             'status_filter' => $this->statusFilter,
-            'search' => $this->search,
-            'current_page' => $assessments->currentPage(),
-            'per_page' => $assessments->perPage()
+            'search' => $this->search
         ]);
 
         return view('livewire.user.assessment-history', [
-            'assessments' => $assessments
+            'assessments' => $assessments,
+            'isAdmin' => $isAdmin
         ])->layout('layouts.app');
     }
 }

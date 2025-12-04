@@ -73,28 +73,41 @@
                         <p class="text-neutral-sub">Tidak ada assessment ditemukan</p>
                     </div>
                 @else
-                    <table class="min-w-full divide-y divide-neutral-line">
+                    <!-- Wrapper untuk horizontal scroll di mobile -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-neutral-line">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alternatif</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                @if($isAdmin)
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">User</th>
+                                @endif
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Judul</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Tanggal</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Alternatif</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-neutral-line">
                             @foreach($assessments as $assessment)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm font-medium text-neutral-text">{{ $assessment->title }}</div>
+                                    @if($isAdmin)
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm">
+                                            <div class="font-medium text-neutral-text">{{ $assessment->user->name ?? '—' }}</div>
+                                            <div class="text-xs text-neutral-sub">{{ $assessment->user->email ?? '—' }}</div>
+                                        </div>
+                                    </td>
+                                    @endif
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm font-medium text-neutral-text max-w-xs">{{ $assessment->title }}</div>
                                         <div class="text-xs text-neutral-sub">{{ $assessment->n_criteria }} kriteria</div>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-neutral-sub">
+                                    <td class="px-4 py-3 text-sm text-neutral-sub whitespace-nowrap">
                                         {{ $assessment->created_at->format('d M Y') }}<br>
                                         <span class="text-xs">{{ $assessment->created_at->format('H:i') }}</span>
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-4 py-3 whitespace-nowrap">
                                         <span class="px-2 py-1 text-xs rounded-full
                                             @if($assessment->status === 'done') bg-green-100 text-green-700
                                             @elseif($assessment->status === 'running') bg-blue-100 text-blue-700
@@ -104,10 +117,10 @@
                                             {{ ucfirst($assessment->status) }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-neutral-text">
+                                    <td class="px-4 py-3 text-sm text-neutral-text whitespace-nowrap">
                                         {{ $assessment->n_alternatives }} jalur
                                     </td>
-                                    <td class="px-6 py-4 text-right text-sm font-medium">
+                                    <td class="px-4 py-3 text-right text-sm font-medium whitespace-nowrap">
                                         <div class="flex justify-end gap-2">
                                             @if($assessment->status === 'done')
                                                 <a href="{{ route('assess.result', $assessment->id) }}" class="px-3 py-1.5 rounded-lg bg-brand text-white text-xs hover:bg-indigo-700 transition-colors">
@@ -129,6 +142,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div>
                 @endif
             </div>
 
