@@ -24,11 +24,26 @@ class LandingController extends Controller
         $provinces = \App\Models\Mountain::select('province')->distinct()->pluck('province')->filter()->values();
         $userCriteria = Criterion::where('source','USER')->orderByRaw("CAST(SUBSTRING(code,2) AS UNSIGNED)")->get();
 
+        // Get all mountains for selection
+        $mountains = \App\Models\Mountain::where('status', '!=', 'closed')
+            ->orderBy('name')
+            ->get()
+            ->map(function($mountain) {
+                return [
+                    'id' => $mountain->id,
+                    'name' => $mountain->name,
+                    'province' => $mountain->province,
+                    'elevation' => $mountain->elevation_m,
+                    'status' => $mountain->status,
+                    'route_count' => $mountain->routes()->count()
+                ];
+            });
+
         // Get statistics for homepage
         $mountainsCount = \App\Models\Mountain::count();
         $routesCount = \App\Models\Route::count();
         $assessmentsCount = \App\Models\Assessment::count();
-        
+
         // Get popular routes (most used in assessments)
         $popularRoutes = \App\Models\AssessmentAlternative::selectRaw('route_id, COUNT(*) as usage_count')
             ->groupBy('route_id')
@@ -53,8 +68,8 @@ class LandingController extends Controller
                 return null;
             })
             ->filter();
-        
-        return view('landing', compact('provinces','userCriteria','mountainsCount','routesCount','assessmentsCount','popularRoutes'));
+
+        return view('landing', compact('provinces','userCriteria','mountains','mountainsCount','routesCount','assessmentsCount','popularRoutes'));
     }
     
     private function getDifficultyLevel($slopeClass)
@@ -95,11 +110,27 @@ class LandingController extends Controller
         if (auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('editor'))) {
             return redirect()->route('admin.dashboard')->with('error', 'Admin tidak dapat melakukan assessment.');
         }
-        
+
+        // VALIDASI: Gunung harus dipilih
+        $mountainId = $r->input('mountain_id');
+        if (!$mountainId) {
+            return redirect()->route('landing')->with('error', 'Silakan pilih gunung terlebih dahulu untuk memulai assessment.');
+        }
+
+        // Validasi gunung exists dan tidak closed
+        $mountain = \App\Models\Mountain::where('id', $mountainId)
+            ->where('status', '!=', 'closed')
+            ->first();
+
+        if (!$mountain) {
+            return redirect()->route('landing')->with('error', 'Gunung yang dipilih tidak tersedia atau sedang ditutup.');
+        }
+
         // 1) buat assessment dengan weight preset dan konfigurasi
         $a = Assessment::create([
           'user_id'=>auth()->id(),
-          'title'=>$r->input('title','Assessment '.now()->format('Y-m-d H:i')),
+          'mountain_id'=>$mountainId,
+          'title'=>$r->input('title', $mountain->name . ' - Assessment '.now()->format('Y-m-d H:i')),
           'status'=>'draft',
           'top_k'=> (int)($r->input('top_k',5)),
         ]);
@@ -115,16 +146,22 @@ class LandingController extends Controller
         $normalizer = app('App\Services\AnswerNormalizer');
         $normalizer->normalize($a);
 
-        // 4) pilih alternatif (contoh: semua rute gunung status open / province filter)
-        $q = RouteModel::with('mountain')->whereHas('mountain', fn($x)=>$x->where('status','!=','closed'));
-        if ($prov = $r->input('province')) $q->whereHas('mountain', fn($x)=>$x->where('province',$prov));
+        // 4) pilih alternatif HANYA dari gunung yang dipilih
+        $q = RouteModel::with('mountain')
+            ->whereHas('mountain', fn($x)=>$x->where('id', $mountainId)->where('status','!=','closed'));
+
         $routeIds = $q->pluck('id')->toArray();
+
+        if (empty($routeIds)) {
+            return redirect()->route('landing')->with('error', 'Tidak ada jalur tersedia untuk gunung ' . $mountain->name);
+        }
+
         $bulk = [];
         foreach ($routeIds as $rid) $bulk[] = ['assessment_id'=>$a->id,'route_id'=>$rid,'is_excluded'=>false];
         AssessmentAlternative::insert($bulk);
 
         // 5) redirect ke wizard untuk mengisi kuesioner
-        return redirect()->route('assess.wizard', $a->id)->with('next','Silakan isi kuesioner untuk mendapatkan rekomendasi terbaik.');
+        return redirect()->route('assess.wizard', $a->id)->with('next','Silakan isi kuesioner untuk mendapatkan rekomendasi jalur terbaik di ' . $mountain->name . '.');
     }
 
     /**

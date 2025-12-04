@@ -46,40 +46,106 @@
     </section>
 
     <!-- Main CTA -->
-    <section class="py-16 bg-white">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <h2 class="text-3xl font-bold text-gray-900 mb-6">
-                Mulai Penilaian Sekarang
-            </h2>
-            <p class="text-lg text-gray-600 mb-8">
-                Proses hanya 3-5 menit • Hasil langsung tersedia • Gratis 100%
-            </p>
+    <section class="py-16 bg-white" id="start-assessment">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">
+                    Mulai Penilaian Sekarang
+                </h2>
+                <p class="text-lg text-gray-600 mb-8">
+                    Proses hanya 3-5 menit • Hasil langsung tersedia • Gratis 100%
+                </p>
+            </div>
 
-            <!-- Assessment Button -->
-            <button onclick="startAssessment()"
-                    id="start-assessment-btn"
-                    class="inline-flex items-center px-10 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 group">
-                <span class="mr-3 text-2xl">🎯</span>
-                <span>Mulai Assessment</span>
-                <svg class="ml-3 w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
-            </button>
+            <!-- Mountain Selection -->
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 mb-8 border-2 border-blue-200">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mr-4">
+                        <span class="text-white text-2xl">🏔️</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Pilih Gunung</h3>
+                        <p class="text-sm text-gray-600">Pilih gunung yang ingin Anda daki untuk mendapatkan rekomendasi jalur terbaik</p>
+                    </div>
+                </div>
 
-            <!-- Loading state -->
-            <button id="loading-btn" style="display: none;"
-                    class="inline-flex items-center px-10 py-4 rounded-2xl bg-gray-400 text-white text-lg font-semibold cursor-not-allowed">
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>Mempersiapkan Assessment...</span>
-            </button>
+                <!-- Mountain Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto pr-2">
+                    @foreach($mountains as $mountain)
+                    <div class="mountain-card bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-blue-500 cursor-pointer transition-all duration-200 hover:shadow-lg"
+                         onclick="selectMountain({{ $mountain['id'] }}, '{{ $mountain['name'] }}')"
+                         data-mountain-id="{{ $mountain['id'] }}">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-gray-900 text-base mb-1">{{ $mountain['name'] }}</h4>
+                                <p class="text-xs text-gray-500">{{ $mountain['province'] }}</p>
+                            </div>
+                            <div class="mountain-check hidden">
+                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="flex items-center gap-1 text-gray-600">
+                                <span>⛰️</span>
+                                <span>{{ number_format($mountain['elevation']) }} mdpl</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-gray-600">
+                                <span>🛤️</span>
+                                <span>{{ $mountain['route_count'] }} jalur</span>
+                            </div>
+                        </div>
+                        @if($mountain['status'] === 'open')
+                        <div class="mt-2">
+                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                ✓ Dibuka
+                            </span>
+                        </div>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
 
-            <div class="mt-6 text-sm text-gray-500 space-y-1">
-                <div>✓ Interface intuitif dan mudah digunakan</div>
-                <div>✓ Auto-save setiap langkah</div>
-                <div>✓ Hasil tersimpan dan dapat diakses kapan saja</div>
+                <!-- Error message -->
+                <div id="mountain-error" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    <p class="text-sm text-red-600 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293z" clip-rule="evenodd"/>
+                        </svg>
+                        Silakan pilih gunung terlebih dahulu
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <!-- Assessment Button -->
+                <button onclick="startAssessment()"
+                        id="start-assessment-btn"
+                        class="inline-flex items-center px-10 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 group">
+                    <span class="mr-3 text-2xl">🎯</span>
+                    <span>Mulai Assessment</span>
+                    <svg class="ml-3 w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </button>
+
+                <!-- Loading state -->
+                <button id="loading-btn" style="display: none;"
+                        class="inline-flex items-center px-10 py-4 rounded-2xl bg-gray-400 text-white text-lg font-semibold cursor-not-allowed">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Mempersiapkan Assessment...</span>
+                </button>
+
+                <div class="mt-6 text-sm text-gray-500 space-y-1">
+                    <div>✓ Interface intuitif dan mudah digunakan</div>
+                    <div>✓ Auto-save setiap langkah</div>
+                    <div>✓ Hasil tersimpan dan dapat diakses kapan saja</div>
+                </div>
             </div>
         </div>
     </section>
@@ -346,6 +412,7 @@
         @csrf
         <input type="text" name="title" value="{{ old('title', 'Assessment ' . now()->format('Y-m-d H:i')) }}" style="display: none;">
         <input type="number" name="top_k" value="5" style="display: none;">
+        <input type="hidden" name="mountain_id" id="selected-mountain-id" value="">
 
         @foreach($userCriteria as $criterion)
             <input type="hidden" name="{{ $criterion->code }}" value="{{ $criterion->default_value ?? '3' }}">
@@ -355,7 +422,49 @@
     </form>
 
     <script>
+        let selectedMountainId = null;
+        let selectedMountainName = null;
+
+        function selectMountain(mountainId, mountainName) {
+            // Remove selection from all cards
+            document.querySelectorAll('.mountain-card').forEach(card => {
+                card.classList.remove('border-blue-500', 'bg-blue-50');
+                card.classList.add('border-gray-200');
+                card.querySelector('.mountain-check').classList.add('hidden');
+            });
+
+            // Add selection to clicked card
+            const selectedCard = document.querySelector(`[data-mountain-id="${mountainId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.remove('border-gray-200');
+                selectedCard.classList.add('border-blue-500', 'bg-blue-50');
+                selectedCard.querySelector('.mountain-check').classList.remove('hidden');
+            }
+
+            // Store selected mountain
+            selectedMountainId = mountainId;
+            selectedMountainName = mountainName;
+
+            // Hide error message if shown
+            document.getElementById('mountain-error').classList.add('hidden');
+
+            console.log('Selected mountain:', mountainId, mountainName);
+        }
+
         function startAssessment() {
+            // Validate mountain selection
+            if (!selectedMountainId) {
+                const errorDiv = document.getElementById('mountain-error');
+                errorDiv.classList.remove('hidden');
+
+                // Scroll to error
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // Set mountain_id in form
+            document.getElementById('selected-mountain-id').value = selectedMountainId;
+
             const startBtn = document.getElementById('start-assessment-btn');
             const loadingBtn = document.getElementById('loading-btn');
 
@@ -397,6 +506,21 @@
 
             startBtn.style.display = 'inline-flex';
             loadingBtn.style.display = 'none';
+        });
+
+        // Check URL parameters for mountain_id (from external links)
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mountainId = urlParams.get('mountain_id');
+
+            if (mountainId) {
+                const mountainCard = document.querySelector(`[data-mountain-id="${mountainId}"]`);
+                if (mountainCard) {
+                    mountainCard.click();
+                    // Scroll to assessment section
+                    document.getElementById('start-assessment').scrollIntoView({ behavior: 'smooth' });
+                }
+            }
         });
     </script>
 </div>
