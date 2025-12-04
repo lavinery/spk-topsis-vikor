@@ -267,8 +267,13 @@
                         <div class="flex items-center">
                             <span class="text-3xl mr-3">🏔️</span>
                             <div>
-                                <h3 class="text-xl font-bold text-white">Pilih Gunung untuk Pendakian</h3>
-                                <p class="text-sm text-blue-100">Pilih satu gunung untuk mendapatkan rekomendasi jalur terbaik</p>
+                                <div class="flex items-center gap-3">
+                                    <h3 class="text-xl font-bold text-white">Pilih Gunung untuk Pendakian</h3>
+                                    <span id="selection-counter" class="hidden px-3 py-1 bg-white/20 rounded-full text-sm font-semibold text-white">
+                                        0 gunung terpilih
+                                    </span>
+                                </div>
+                                <p class="text-sm text-blue-100">Pilih satu atau lebih gunung untuk mendapatkan rekomendasi jalur terbaik</p>
                             </div>
                         </div>
                         <button onclick="closeMountainModal()" class="text-white hover:text-gray-200 transition-colors">
@@ -295,7 +300,7 @@
                             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293z" clip-rule="evenodd"/>
                             </svg>
-                            Silakan pilih gunung terlebih dahulu
+                            Silakan pilih minimal satu gunung untuk memulai assessment
                         </p>
                     </div>
                 </div>
@@ -320,7 +325,7 @@
         @csrf
         <input type="text" name="title" value="{{ old('title', 'Assessment ' . now()->format('Y-m-d H:i')) }}" style="display: none;">
         <input type="number" name="top_k" value="5" style="display: none;">
-        <input type="hidden" name="mountain_id" id="selected-mountain-id" value="">
+        <input type="hidden" name="mountain_ids" id="selected-mountain-ids" value="">
 
         @foreach($userCriteria as $criterion)
             <input type="hidden" name="{{ $criterion->code }}" value="{{ $criterion->default_value ?? '3' }}">
@@ -330,8 +335,7 @@
     </form>
 
     <script>
-        let selectedMountainId = null;
-        let selectedMountainName = null;
+        let selectedMountainIds = new Set();
         let mountainsData = @json($mountains);
 
         function openMountainModal() {
@@ -356,53 +360,100 @@
                 return;
             }
 
-            container.innerHTML = filtered.map(mountain => `
-                <div class="mountain-option border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${selectedMountainId === mountain.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}"
-                     onclick="selectMountain(${mountain.id}, '${mountain.name}')">
-                    <div class="flex items-start justify-between mb-3">
+            container.innerHTML = filtered.map(mountain => {
+                const isSelected = selectedMountainIds.has(mountain.id);
+                return `
+                <div class="border-2 rounded-xl p-4 transition-all duration-200 ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
+                    <div class="flex items-start gap-3 mb-3">
+                        <input type="checkbox"
+                               id="mountain-${mountain.id}"
+                               class="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                               ${isSelected ? 'checked' : ''}
+                               onchange="toggleMountain(${mountain.id})">
                         <div class="flex-1">
-                            <h4 class="font-semibold text-gray-900 text-base mb-1">${mountain.name}</h4>
-                            <p class="text-xs text-gray-500">${mountain.province}</p>
-                        </div>
-                        <div class="mountain-check ${selectedMountainId === mountain.id ? '' : 'hidden'}">
-                            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
+                            <label for="mountain-${mountain.id}" class="cursor-pointer">
+                                <h4 class="font-semibold text-gray-900 text-base mb-1">${mountain.name}</h4>
+                                <p class="text-xs text-gray-500">${mountain.province}</p>
+                            </label>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <div class="flex items-center gap-1 text-gray-600">
-                            <span>⛰️</span>
-                            <span>${new Intl.NumberFormat('id-ID').format(mountain.elevation)} mdpl</span>
+                    <div class="ml-8">
+                        <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+                            <div class="flex items-center gap-1 text-gray-600">
+                                <span>⛰️</span>
+                                <span>${new Intl.NumberFormat('id-ID').format(mountain.elevation)} mdpl</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-gray-600">
+                                <span>🛤️</span>
+                                <span>${mountain.route_count} jalur</span>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-1 text-gray-600">
-                            <span>🛤️</span>
-                            <span>${mountain.route_count} jalur</span>
-                        </div>
+                        ${mountain.routes && mountain.routes.length > 0 ? `
+                            <div class="mt-3 pt-3 border-t border-gray-200">
+                                <p class="text-xs font-semibold text-gray-700 mb-2">Jalur Tersedia:</p>
+                                <div class="space-y-1">
+                                    ${mountain.routes.map(route => `
+                                        <div class="flex items-center justify-between text-xs text-gray-600 py-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-400">→</span>
+                                                <span class="font-medium">${route.name}</span>
+                                            </div>
+                                            <div class="flex items-center gap-3">
+                                                <span class="px-2 py-0.5 rounded-full text-xs ${
+                                                    route.difficulty === 'Pemula' ? 'bg-green-100 text-green-700' :
+                                                    route.difficulty === 'Menengah' ? 'bg-yellow-100 text-yellow-700' :
+                                                    'bg-red-100 text-red-700'
+                                                }">${route.difficulty}</span>
+                                                <span>${route.distance_km} km</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        ${mountain.status === 'open' ? `
+                            <div class="mt-2">
+                                <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                    ✓ Dibuka
+                                </span>
+                            </div>
+                        ` : ''}
                     </div>
-                    ${mountain.status === 'open' ? `
-                        <div class="mt-2">
-                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                                ✓ Dibuka
-                            </span>
-                        </div>
-                    ` : ''}
                 </div>
-            `).join('');
+            `}).join('');
+
+            // Update selection counter
+            updateSelectionCounter();
         }
 
-        function selectMountain(mountainId, mountainName) {
-            selectedMountainId = mountainId;
-            selectedMountainName = mountainName;
+        function toggleMountain(mountainId) {
+            if (selectedMountainIds.has(mountainId)) {
+                selectedMountainIds.delete(mountainId);
+            } else {
+                selectedMountainIds.add(mountainId);
+            }
 
-            // Re-render to update selection UI
+            // Re-render to update UI
             const searchValue = document.getElementById('search-mountain').value;
             renderMountainsList(searchValue);
 
             // Hide error message
             document.getElementById('no-selection-error').classList.add('hidden');
 
-            console.log('Selected mountain:', mountainId, mountainName);
+            console.log('Selected mountains:', Array.from(selectedMountainIds));
+        }
+
+        function updateSelectionCounter() {
+            const counter = document.getElementById('selection-counter');
+            if (counter) {
+                const count = selectedMountainIds.size;
+                if (count > 0) {
+                    counter.textContent = `${count} gunung terpilih`;
+                    counter.classList.remove('hidden');
+                } else {
+                    counter.classList.add('hidden');
+                }
+            }
         }
 
         function filterMountains() {
@@ -411,13 +462,13 @@
         }
 
         function submitMountainSelection() {
-            if (!selectedMountainId) {
+            if (selectedMountainIds.size === 0) {
                 document.getElementById('no-selection-error').classList.remove('hidden');
                 return;
             }
 
-            // Set mountain_id in form
-            document.getElementById('selected-mountain-id').value = selectedMountainId;
+            // Set mountain_ids in form (comma-separated)
+            document.getElementById('selected-mountain-ids').value = Array.from(selectedMountainIds).join(',');
 
             // Hide modal and show loading
             closeMountainModal();
@@ -444,17 +495,27 @@
         window.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const mountainId = urlParams.get('mountain_id');
+            const mountainIds = urlParams.get('mountain_ids'); // Support multiple IDs
 
-            if (mountainId) {
-                // Auto-open modal and pre-select mountain
-                const mountain = mountainsData.find(m => m.id == mountainId);
-                if (mountain) {
+            if (mountainIds) {
+                // Multiple mountains from URL
+                const ids = mountainIds.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+                ids.forEach(id => {
+                    const mountain = mountainsData.find(m => m.id === id);
+                    if (mountain) {
+                        selectedMountainIds.add(id);
+                    }
+                });
+                if (selectedMountainIds.size > 0) {
                     openMountainModal();
-                    selectMountain(mountain.id, mountain.name);
-                    // Scroll modal into view
-                    setTimeout(() => {
-                        document.getElementById('mountain-modal').scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
+                }
+            } else if (mountainId) {
+                // Single mountain from URL (backward compatibility)
+                const id = parseInt(mountainId);
+                const mountain = mountainsData.find(m => m.id === id);
+                if (mountain) {
+                    selectedMountainIds.add(id);
+                    openMountainModal();
                 }
             }
         });

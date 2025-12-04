@@ -24,8 +24,11 @@ class LandingController extends Controller
         $provinces = \App\Models\Mountain::select('province')->distinct()->pluck('province')->filter()->values();
         $userCriteria = Criterion::where('source', 'USER')->orderByRaw("CAST(SUBSTRING(code,2) AS UNSIGNED)")->get();
 
-        // Get all mountains for selection
+        // Get all mountains for selection with their routes
         $mountains = \App\Models\Mountain::where('status', '!=', 'closed')
+            ->with(['routes' => function ($query) {
+                $query->select('id', 'mountain_id', 'name', 'distance_km', 'elevation_gain_m', 'slope_class');
+            }])
             ->orderBy('name')
             ->get()
             ->map(function ($mountain) {
@@ -35,7 +38,16 @@ class LandingController extends Controller
                     'province' => $mountain->province,
                     'elevation' => $mountain->elevation_m,
                     'status' => $mountain->status,
-                    'route_count' => $mountain->routes()->count()
+                    'route_count' => $mountain->routes->count(),
+                    'routes' => $mountain->routes->map(function ($route) {
+                        return [
+                            'id' => $route->id,
+                            'name' => $route->name,
+                            'distance_km' => $route->distance_km,
+                            'elevation_gain_m' => $route->elevation_gain_m,
+                            'difficulty' => $this->getDifficultyLevel($route->slope_class),
+                        ];
+                    })
                 ];
             });
 
@@ -111,26 +123,36 @@ class LandingController extends Controller
             return redirect()->route('admin.dashboard')->with('error', 'Admin tidak dapat melakukan assessment.');
         }
 
-        // VALIDASI: Gunung harus dipilih
-        $mountainId = $r->input('mountain_id');
-        if (!$mountainId) {
-            return redirect()->route('landing')->with('error', 'Silakan pilih gunung terlebih dahulu untuk memulai assessment.');
+        // VALIDASI: Gunung harus dipilih (bisa multiple)
+        $mountainIds = $r->input('mountain_ids'); // comma-separated atau array
+
+        // Convert comma-separated string to array
+        if (is_string($mountainIds)) {
+            $mountainIds = array_filter(explode(',', $mountainIds));
+        }
+
+        if (empty($mountainIds)) {
+            return redirect()->route('landing')->with('error', 'Silakan pilih minimal satu gunung untuk memulai assessment.');
         }
 
         // Validasi gunung exists dan tidak closed
-        $mountain = \App\Models\Mountain::where('id', $mountainId)
+        $mountains = \App\Models\Mountain::whereIn('id', $mountainIds)
             ->where('status', '!=', 'closed')
-            ->first();
+            ->get();
 
-        if (!$mountain) {
-            return redirect()->route('landing')->with('error', 'Gunung yang dipilih tidak tersedia atau sedang ditutup.');
+        if ($mountains->isEmpty()) {
+            return redirect()->route('landing')->with('error', 'Tidak ada gunung yang valid dari pilihan Anda.');
         }
+
+        // Ambil gunung pertama untuk mountain_id dan title
+        $primaryMountain = $mountains->first();
+        $mountainNames = $mountains->pluck('name')->join(', ');
 
         // 1) buat assessment dengan weight preset dan konfigurasi
         $a = Assessment::create([
             'user_id' => auth()->id(),
-            'mountain_id' => $mountainId,
-            'title' => $r->input('title', $mountain->name . ' - Assessment ' . now()->format('Y-m-d H:i')),
+            'mountain_id' => $primaryMountain->id,
+            'title' => $r->input('title', ($mountains->count() > 1 ? 'Multi-Mountain' : $primaryMountain->name) . ' - Assessment ' . now()->format('Y-m-d H:i')),
             'status' => 'draft',
             'top_k' => (int)($r->input('top_k', 5)),
         ]);
@@ -146,14 +168,14 @@ class LandingController extends Controller
         $normalizer = app('App\Services\AnswerNormalizer');
         $normalizer->normalize($a);
 
-        // 4) pilih alternatif HANYA dari gunung yang dipilih
+        // 4) pilih alternatif dari semua gunung yang dipilih
         $q = RouteModel::with('mountain')
-            ->whereHas('mountain', fn($x) => $x->where('id', $mountainId)->where('status', '!=', 'closed'));
+            ->whereHas('mountain', fn($x) => $x->whereIn('id', $mountainIds)->where('status', '!=', 'closed'));
 
         $routeIds = $q->pluck('id')->toArray();
 
         if (empty($routeIds)) {
-            return redirect()->route('landing')->with('error', 'Tidak ada jalur tersedia untuk gunung ' . $mountain->name);
+            return redirect()->route('landing')->with('error', 'Tidak ada jalur tersedia untuk gunung yang dipilih: ' . $mountainNames);
         }
 
         $bulk = [];
@@ -164,7 +186,8 @@ class LandingController extends Controller
         }
 
         // 5) redirect ke wizard untuk mengisi kuesioner
-        return redirect()->route('assess.wizard', $a->id)->with('next', 'Silakan isi kuesioner untuk mendapatkan rekomendasi jalur terbaik di ' . $mountain->name . '.');
+        $totalRoutes = count($routeIds);
+        return redirect()->route('assess.wizard', $a->id)->with('next', "Terpilih {$totalRoutes} jalur dari {$mountainNames}. Silakan isi kuesioner untuk mendapatkan rekomendasi jalur terbaik.");
     }
 
     /**
