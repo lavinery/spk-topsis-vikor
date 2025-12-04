@@ -32,7 +32,8 @@ class AssessmentsMonitor extends Component
 
     public function render()
     {
-        $list = Assessment::when($this->q, fn($q)=>$q->where('title','like','%'.$this->q.'%'))
+        $list = Assessment::with('user')
+            ->when($this->q, fn($q)=>$q->where('title','like','%'.$this->q.'%'))
             ->latest()->paginate(10);
 
         // ringkas top-5 untuk list
