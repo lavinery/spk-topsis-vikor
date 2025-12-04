@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Assessment extends Model
 {
-    protected $fillable = ['user_id', 'title', 'status', 'n_criteria', 'n_alternatives', 'weights_json', 'filters_json', 'top_k', 'pure_formula'];
+    protected $fillable = ['user_id', 'mountain_id', 'title', 'status', 'n_criteria', 'n_alternatives', 'weights_json', 'filters_json', 'top_k', 'pure_formula'];
     
     protected $casts = ['weights_json' => 'array', 'filters_json' => 'array'];
     
@@ -29,8 +29,12 @@ class Assessment extends Model
     {
         return $this->belongsTo(User::class);
     }
-    
-    
+
+    public function mountain()
+    {
+        return $this->belongsTo(Mountain::class);
+    }
+
     public function snapshot()
     {
         return $this->hasOne(AssessmentSnapshot::class);
