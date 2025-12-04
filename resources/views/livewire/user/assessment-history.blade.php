@@ -78,7 +78,7 @@
                         <table class="min-w-full divide-y divide-neutral-line">
                         <thead class="bg-gray-50">
                             <tr>
-                                @if($isAdmin)
+                                @if(isset($isAdmin) && $isAdmin)
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">User</th>
                                 @endif
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Judul</th>
@@ -91,7 +91,7 @@
                         <tbody class="bg-white divide-y divide-neutral-line">
                             @foreach($assessments as $assessment)
                                 <tr class="hover:bg-gray-50">
-                                    @if($isAdmin)
+                                    @if(isset($isAdmin) && $isAdmin)
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <div class="text-sm">
                                             <div class="font-medium text-neutral-text">{{ $assessment->user->name ?? '—' }}</div>
