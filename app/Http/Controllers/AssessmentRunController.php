@@ -57,6 +57,25 @@ class AssessmentRunController extends Controller
             // Refresh assessment to get updated status
             $a->refresh();
 
+            // Debug logging
+            \Log::info('Assessment after TOPSIS', [
+                'assessment_id' => $a->id,
+                'user_id' => $a->user_id,
+                'status' => $a->status,
+                'title' => $a->title,
+                'n_alternatives' => $a->n_alternatives,
+                'n_criteria' => $a->n_criteria
+            ]);
+
+            // Double-check in database
+            $dbAssessment = Assessment::find($a->id);
+            \Log::info('Assessment from database', [
+                'assessment_id' => $dbAssessment->id,
+                'user_id' => $dbAssessment->user_id,
+                'status' => $dbAssessment->status,
+                'title' => $dbAssessment->title
+            ]);
+
             // Verify that calculation completed successfully
             if ($a->status !== 'done') {
                 throw new \Exception('Perhitungan TOPSIS gagal. Status: ' . $a->status);

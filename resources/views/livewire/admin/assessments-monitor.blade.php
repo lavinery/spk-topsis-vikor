@@ -17,20 +17,29 @@
     </div>
 
     <div class="mt-6 bg-white rounded-xl border border-neutral-line shadow-sm overflow-hidden">
-        <table class="min-w-full text-sm border-collapse">
+        <!-- Wrapper untuk horizontal scroll di mobile -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm border-collapse">
             <thead class="bg-gray-50 border-b border-neutral-line">
                 <tr class="text-left">
-                    <th class="px-4 py-3 border-r border-neutral-line">#</th>
-                    <th class="px-4 py-3 border-r border-neutral-line">Judul</th>
-                    <th class="px-4 py-3 border-r border-neutral-line">Status</th>
-                    <th class="px-4 py-3 border-r border-neutral-line">Top-5</th>
-                    <th class="px-4 py-3">Aksi</th>
+                    <th class="px-4 py-3 border-r border-neutral-line whitespace-nowrap">#</th>
+                    <th class="px-4 py-3 border-r border-neutral-line whitespace-nowrap">User</th>
+                    <th class="px-4 py-3 border-r border-neutral-line whitespace-nowrap">Judul</th>
+                    <th class="px-4 py-3 border-r border-neutral-line whitespace-nowrap">Status</th>
+                    <th class="px-4 py-3 border-r border-neutral-line whitespace-nowrap">Top-5</th>
+                    <th class="px-4 py-3 whitespace-nowrap">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($rows as $i=>$row)
                     <tr class="border-b border-neutral-line hover:bg-gray-50">
                         <td class="px-4 py-3 border-r border-neutral-line">{{ $list->firstItem() + $i }}</td>
+                        <td class="px-4 py-3 border-r border-neutral-line">
+                            <div class="text-sm">
+                                <div class="font-medium text-neutral-text">{{ $row['a']->user->name ?? '—' }}</div>
+                                <div class="text-xs text-neutral-sub">ID: {{ $row['a']->user_id }}</div>
+                            </div>
+                        </td>
                         <td class="px-4 py-3 border-r border-neutral-line">{{ $row['a']->title ?? '—' }}</td>
                         <td class="px-4 py-3 border-r border-neutral-line">
                             <span class="px-2 py-0.5 rounded-full text-xs
@@ -67,6 +76,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
     </div>
     <div class="mt-4">{{ $list->links() }}</div>
 </div>
