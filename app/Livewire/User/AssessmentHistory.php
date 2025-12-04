@@ -35,7 +35,24 @@ class AssessmentHistory extends Component
     public function render()
     {
         $userId = auth()->id();
-        $isAdmin = auth()->user()->hasRole('admin') || auth()->user()->hasRole('editor');
+
+        // Check if user is admin/editor (more robust check)
+        $isAdmin = false;
+        try {
+            $user = auth()->user();
+            if ($user) {
+                // Check via database directly to avoid potential method issues
+                $isAdmin = \DB::table('model_has_roles')
+                    ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                    ->where('model_has_roles.model_id', $user->id)
+                    ->where('model_has_roles.model_type', 'App\Models\User')
+                    ->whereIn('roles.name', ['admin', 'editor'])
+                    ->exists();
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error checking admin role: ' . $e->getMessage());
+            $isAdmin = false;
+        }
 
         // Admin bisa lihat SEMUA assessments, user biasa hanya miliknya
         $query = Assessment::with('user');
@@ -61,6 +78,7 @@ class AssessmentHistory extends Component
             'user_id' => $userId,
             'is_admin' => $isAdmin,
             'total' => $assessments->total(),
+            'count' => $assessments->count(),
             'status_filter' => $this->statusFilter,
             'search' => $this->search
         ]);
