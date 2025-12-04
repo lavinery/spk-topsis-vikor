@@ -57,71 +57,9 @@
                 </p>
             </div>
 
-            <!-- Mountain Selection -->
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 mb-8 border-2 border-blue-200">
-                <div class="flex items-center mb-6">
-                    <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mr-4">
-                        <span class="text-white text-2xl">🏔️</span>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-gray-900">Pilih Gunung</h3>
-                        <p class="text-sm text-gray-600">Pilih gunung yang ingin Anda daki untuk mendapatkan rekomendasi jalur terbaik</p>
-                    </div>
-                </div>
-
-                <!-- Mountain Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto pr-2">
-                    @foreach($mountains as $mountain)
-                    <div class="mountain-card bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-blue-500 cursor-pointer transition-all duration-200 hover:shadow-lg"
-                         onclick="selectMountain({{ $mountain['id'] }}, '{{ $mountain['name'] }}')"
-                         data-mountain-id="{{ $mountain['id'] }}">
-                        <div class="flex items-start justify-between mb-3">
-                            <div class="flex-1">
-                                <h4 class="font-semibold text-gray-900 text-base mb-1">{{ $mountain['name'] }}</h4>
-                                <p class="text-xs text-gray-500">{{ $mountain['province'] }}</p>
-                            </div>
-                            <div class="mountain-check hidden">
-                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-xs">
-                            <div class="flex items-center gap-1 text-gray-600">
-                                <span>⛰️</span>
-                                <span>{{ number_format($mountain['elevation']) }} mdpl</span>
-                            </div>
-                            <div class="flex items-center gap-1 text-gray-600">
-                                <span>🛤️</span>
-                                <span>{{ $mountain['route_count'] }} jalur</span>
-                            </div>
-                        </div>
-                        @if($mountain['status'] === 'open')
-                        <div class="mt-2">
-                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                                ✓ Dibuka
-                            </span>
-                        </div>
-                        @endif
-                    </div>
-                    @endforeach
-                </div>
-
-                <!-- Error message -->
-                <div id="mountain-error" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-                    <p class="text-sm text-red-600 flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293z" clip-rule="evenodd"/>
-                        </svg>
-                        Silakan pilih gunung terlebih dahulu
-                    </p>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
+            <!-- Action Button -->
             <div class="text-center">
-                <!-- Assessment Button -->
-                <button onclick="startAssessment()"
+                <button onclick="openMountainModal()"
                         id="start-assessment-btn"
                         class="inline-flex items-center px-10 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 group">
                     <span class="mr-3 text-2xl">🎯</span>
@@ -150,8 +88,47 @@
         </div>
     </section>
 
-    <!-- Features Section -->
+    <!-- How It Works -->
     <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Cara Kerja Sistem</h2>
+                <p class="text-gray-600">3 langkah mudah untuk mendapatkan rekomendasi jalur terbaik</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Step 1 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <span class="text-2xl font-bold text-blue-600">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">Pilih Gunung</h3>
+                    <p class="text-gray-600 text-center">Pilih gunung yang ingin Anda daki dari daftar gunung yang tersedia</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <span class="text-2xl font-bold text-indigo-600">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">Isi Assessment</h3>
+                    <p class="text-gray-600 text-center">Jawab 14 pertanyaan tentang kemampuan dan preferensi pendakian Anda</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <span class="text-2xl font-bold text-emerald-600">3</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">Dapatkan Rekomendasi</h3>
+                    <p class="text-gray-600 text-center">Sistem akan merekomendasikan jalur terbaik sesuai profil Anda</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">Fitur Unggulan</h2>
@@ -189,107 +166,8 @@
         </div>
     </section>
 
-    <!-- How It Works -->
-    <section class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Cara Kerja Sistem</h2>
-                <p class="text-gray-600">3 langkah mudah untuk mendapatkan rekomendasi jalur terbaik</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Step 1 -->
-                <div class="text-center relative">
-                    <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-xl font-bold shadow-lg">1</div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Isi Assessment</h3>
-                    <p class="text-gray-600">Jawab 14 pertanyaan tentang pengalaman, kondisi fisik, dan preferensi pendakian Anda</p>
-
-                    <!-- Arrow for desktop -->
-                    <div class="hidden md:block absolute top-8 left-full w-8 h-0.5 bg-gray-300 transform -translate-x-4">
-                        <div class="absolute right-0 top-0 w-2 h-2 bg-gray-300 rounded-full transform translate-x-1 -translate-y-0.75"></div>
-                    </div>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="text-center relative">
-                    <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-xl font-bold shadow-lg">2</div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Analisis TOPSIS</h3>
-                    <p class="text-gray-600">Sistem menganalisis 21 kriteria menggunakan algoritma TOPSIS untuk mencocokkan profil Anda</p>
-
-                    <!-- Arrow for desktop -->
-                    <div class="hidden md:block absolute top-8 left-full w-8 h-0.5 bg-gray-300 transform -translate-x-4">
-                        <div class="absolute right-0 top-0 w-2 h-2 bg-gray-300 rounded-full transform translate-x-1 -translate-y-0.75"></div>
-                    </div>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-xl font-bold shadow-lg">3</div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Dapatkan Rekomendasi</h3>
-                    <p class="text-gray-600">Terima ranking jalur terbaik lengkap dengan analisis detail dan visualisasi</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Featured Routes -->
-    @if($popularRoutes->count() > 0)
-    <section class="py-16 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Jalur Populer</h2>
-                <p class="text-gray-600">Jalur-jalur yang sering dipilih pendaki</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($popularRoutes as $route)
-                    <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-                        <div class="flex items-start justify-between mb-4">
-                            <div class="flex-1">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $route['name'] }}</h3>
-                                <p class="text-sm text-gray-500">{{ $route['province'] }}</p>
-                            </div>
-                            <span class="px-3 py-1 text-xs font-medium rounded-full
-                                {{ $route['difficulty'] === 'Pemula' ? 'bg-green-100 text-green-800' :
-                                   ($route['difficulty'] === 'Menengah' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                                {{ $route['difficulty'] }}
-                            </span>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4 text-sm mb-4">
-                            <div class="flex items-center gap-2">
-                                <span class="text-gray-400">📏</span>
-                                <span class="text-gray-700">{{ $route['distance'] }} km</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-gray-400">⏱️</span>
-                                <span class="text-gray-700">{{ $route['duration'] }} jam</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-gray-400">⛰️</span>
-                                <span class="text-gray-700">{{ $route['elevation'] }} m</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-gray-400">⭐</span>
-                                <span class="text-gray-700">{{ $route['rating'] }}</span>
-                            </div>
-                        </div>
-
-                        <div class="pt-4 border-t border-gray-100 flex items-center justify-between">
-                            <span class="text-xs text-gray-500">{{ $route['status'] }} · {{ $route['updated'] }}</span>
-                            <button onclick="startAssessment()" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                                Mulai Assessment →
-                            </button>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-    @endif
-
     <!-- Criteria Overview -->
-    <section class="py-16 bg-white">
+    <section class="py-16 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">21 Kriteria Evaluasi</h2>
@@ -361,86 +239,75 @@
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Brand -->
-                <div class="col-span-1 md:col-span-2">
-                    <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mr-3">
-                            <span class="text-lg">🏔️</span>
-                        </div>
-                        <span class="text-xl font-bold">SPK Pendakian</span>
+            <div class="text-center">
+                <div class="flex items-center justify-center mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mr-3">
+                        <span class="text-lg">🏔️</span>
                     </div>
-                    <p class="text-gray-300 mb-4">
-                        Sistem Pendukung Keputusan untuk rekomendasi jalur pendakian yang aman dan sesuai kemampuan Anda.
-                    </p>
-                    <p class="text-sm text-gray-400">
-                        Powered by Laravel & TOPSIS Algorithm
-                    </p>
+                    <span class="text-xl font-bold">SPK Pendakian</span>
                 </div>
-
-                <!-- Features -->
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Fitur</h4>
-                    <div class="space-y-2 text-gray-300">
-                        <div>🎯 Smart Assessment</div>
-                        <div>📊 TOPSIS Algorithm</div>
-                        <div>🛡️ Safety Constraints</div>
-                        <div>⚡ Real-time Results</div>
-                    </div>
-                </div>
-
-                <!-- Tech -->
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Teknologi</h4>
-                    <div class="space-y-2 text-gray-300">
-                        <div>🔹 21 Kriteria Evaluasi</div>
-                        <div>🔹 Modern Interface</div>
-                        <div>🔹 Auto-save Progress</div>
-                        <div>🔹 Export Results</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; {{ date('Y') }} SPK Pendakian - Sistem Pendukung Keputusan Rekomendasi Jalur Gunung</p>
+                <p class="text-gray-300 mb-4 max-w-2xl mx-auto">
+                    Sistem Pendukung Keputusan untuk rekomendasi jalur pendakian yang aman dan sesuai kemampuan Anda.
+                </p>
+                <p class="text-sm text-gray-400">
+                    &copy; {{ date('Y') }} SPK Pendakian - Powered by Laravel & TOPSIS Algorithm
+                </p>
             </div>
         </div>
     </footer>
 
-    <!-- Modal Pemilihan Gunung & Jalur -->
+    <!-- Modal Pemilihan Gunung -->
     <div id="mountain-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-modal="true" role="dialog">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="closeModal()"></div>
+            <div class="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-75" onclick="closeMountainModal()"></div>
 
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Pilih Gunung & Jalur Pendakian</h3>
-                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-500">
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <span class="text-3xl mr-3">🏔️</span>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">Pilih Gunung untuk Pendakian</h3>
+                                <p class="text-sm text-blue-100">Pilih satu gunung untuk mendapatkan rekomendasi jalur terbaik</p>
+                            </div>
+                        </div>
+                        <button onclick="closeMountainModal()" class="text-white hover:text-gray-200 transition-colors">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
                     </div>
+                </div>
 
+                <div class="bg-white px-6 py-4">
                     <div class="mb-4">
-                        <input type="text" id="search-mountain" placeholder="Cari gunung atau jalur..."
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        <input type="text" id="search-mountain" placeholder="🔍 Cari gunung..."
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
                                onkeyup="filterMountains()">
                     </div>
 
-                    <div id="mountains-list" class="max-h-96 overflow-y-auto space-y-2">
+                    <div id="mountains-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto pr-2">
                         <!-- Will be populated by JavaScript -->
+                    </div>
+
+                    <div id="no-selection-error" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+                        <p class="text-sm text-red-600 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293z" clip-rule="evenodd"/>
+                            </svg>
+                            Silakan pilih gunung terlebih dahulu
+                        </p>
                     </div>
                 </div>
 
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button onclick="submitWithSelection()"
-                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                        Mulai Assessment
+                <div class="bg-gray-50 px-6 py-4 flex flex-col sm:flex-row-reverse gap-3">
+                    <button onclick="submitMountainSelection()"
+                            class="flex-1 sm:flex-none inline-flex justify-center items-center rounded-xl border border-transparent shadow-sm px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-base font-semibold text-white hover:from-blue-700 hover:to-indigo-700 focus:outline-none transition-all">
+                        <span class="mr-2">🎯</span>
+                        <span>Mulai Assessment</span>
                     </button>
-                    <button onclick="closeModal()"
-                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    <button onclick="closeMountainModal()"
+                            class="flex-1 sm:flex-none inline-flex justify-center rounded-xl border-2 border-gray-300 shadow-sm px-6 py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none transition-all">
                         Batal
                     </button>
                 </div>
@@ -453,11 +320,7 @@
         @csrf
         <input type="text" name="title" value="{{ old('title', 'Assessment ' . now()->format('Y-m-d H:i')) }}" style="display: none;">
         <input type="number" name="top_k" value="5" style="display: none;">
-<<<<<<< HEAD
         <input type="hidden" name="mountain_id" id="selected-mountain-id" value="">
-=======
-        <input type="hidden" name="selected_mountains" id="selected_mountains" value="">
->>>>>>> 9e4ed4251b6119678599609497affe019495d94e
 
         @foreach($userCriteria as $criterion)
             <input type="hidden" name="{{ $criterion->code }}" value="{{ $criterion->default_value ?? '3' }}">
@@ -467,97 +330,79 @@
     </form>
 
     <script>
-<<<<<<< HEAD
         let selectedMountainId = null;
         let selectedMountainName = null;
+        let mountainsData = @json($mountains);
 
-        function selectMountain(mountainId, mountainName) {
-            // Remove selection from all cards
-            document.querySelectorAll('.mountain-card').forEach(card => {
-                card.classList.remove('border-blue-500', 'bg-blue-50');
-                card.classList.add('border-gray-200');
-                card.querySelector('.mountain-check').classList.add('hidden');
-            });
-
-            // Add selection to clicked card
-            const selectedCard = document.querySelector(`[data-mountain-id="${mountainId}"]`);
-            if (selectedCard) {
-                selectedCard.classList.remove('border-gray-200');
-                selectedCard.classList.add('border-blue-500', 'bg-blue-50');
-                selectedCard.querySelector('.mountain-check').classList.remove('hidden');
-            }
-
-            // Store selected mountain
-            selectedMountainId = mountainId;
-            selectedMountainName = mountainName;
-
-            // Hide error message if shown
-            document.getElementById('mountain-error').classList.add('hidden');
-
-            console.log('Selected mountain:', mountainId, mountainName);
+        function openMountainModal() {
+            document.getElementById('mountain-modal').classList.remove('hidden');
+            renderMountainsList();
         }
 
-        function startAssessment() {
-            // Validate mountain selection
-            if (!selectedMountainId) {
-                const errorDiv = document.getElementById('mountain-error');
-                errorDiv.classList.remove('hidden');
-
-                // Scroll to error
-                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
-
-            // Set mountain_id in form
-            document.getElementById('selected-mountain-id').value = selectedMountainId;
-=======
-        let mountainsData = [];
-        let selectedMountains = new Set();
-
-        // Load mountains data
-        async function loadMountains() {
-            try {
-                const response = await fetch('/api/mountains-list');
-                mountainsData = await response.json();
-                renderMountainsList();
-            } catch (error) {
-                console.error('Error loading mountains:', error);
-            }
+        function closeMountainModal() {
+            document.getElementById('mountain-modal').classList.add('hidden');
+            document.getElementById('no-selection-error').classList.add('hidden');
         }
 
         function renderMountainsList(filter = '') {
             const container = document.getElementById('mountains-list');
             const filtered = mountainsData.filter(m =>
                 m.name.toLowerCase().includes(filter.toLowerCase()) ||
-                (m.routes && m.routes.some(r => r.name.toLowerCase().includes(filter.toLowerCase())))
+                m.province.toLowerCase().includes(filter.toLowerCase())
             );
 
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="col-span-2 text-center py-8 text-gray-500">Tidak ada gunung ditemukan</div>';
+                return;
+            }
+
             container.innerHTML = filtered.map(mountain => `
-                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
-                    <div class="flex items-center mb-2">
-                        <input type="checkbox"
-                               id="mountain-${mountain.id}"
-                               class="mr-3 w-4 h-4 text-blue-600"
-                               onchange="toggleMountain(${mountain.id})"
-                               ${selectedMountains.has(mountain.id) ? 'checked' : ''}>
-                        <label for="mountain-${mountain.id}" class="font-semibold text-gray-900 cursor-pointer flex-1">
-                            🏔️ ${mountain.name}
-                        </label>
-                        <span class="text-sm text-gray-500">${mountain.routes ? mountain.routes.length : 0} jalur</span>
+                <div class="mountain-option border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${selectedMountainId === mountain.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}"
+                     onclick="selectMountain(${mountain.id}, '${mountain.name}')">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900 text-base mb-1">${mountain.name}</h4>
+                            <p class="text-xs text-gray-500">${mountain.province}</p>
+                        </div>
+                        <div class="mountain-check ${selectedMountainId === mountain.id ? '' : 'hidden'}">
+                            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
                     </div>
-                    ${mountain.routes && mountain.routes.length > 0 ? `
-                        <div class="ml-7 mt-2 space-y-1 text-sm text-gray-600">
-                            ${mountain.routes.map(route => `
-                                <div class="flex items-center gap-2">
-                                    <span class="text-gray-400">→</span>
-                                    <span>${route.name}</span>
-                                    <span class="text-xs text-gray-400">(${route.distance_km} km)</span>
-                                </div>
-                            `).join('')}
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="flex items-center gap-1 text-gray-600">
+                            <span>⛰️</span>
+                            <span>${new Intl.NumberFormat('id-ID').format(mountain.elevation)} mdpl</span>
+                        </div>
+                        <div class="flex items-center gap-1 text-gray-600">
+                            <span>🛤️</span>
+                            <span>${mountain.route_count} jalur</span>
+                        </div>
+                    </div>
+                    ${mountain.status === 'open' ? `
+                        <div class="mt-2">
+                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                ✓ Dibuka
+                            </span>
                         </div>
                     ` : ''}
                 </div>
             `).join('');
+        }
+
+        function selectMountain(mountainId, mountainName) {
+            selectedMountainId = mountainId;
+            selectedMountainName = mountainName;
+
+            // Re-render to update selection UI
+            const searchValue = document.getElementById('search-mountain').value;
+            renderMountainsList(searchValue);
+
+            // Hide error message
+            document.getElementById('no-selection-error').classList.add('hidden');
+
+            console.log('Selected mountain:', mountainId, mountainName);
         }
 
         function filterMountains() {
@@ -565,67 +410,29 @@
             renderMountainsList(search);
         }
 
-        function toggleMountain(id) {
-            if (selectedMountains.has(id)) {
-                selectedMountains.delete(id);
-            } else {
-                selectedMountains.add(id);
-            }
-        }
-
-        function startAssessment() {
-            document.getElementById('mountain-modal').classList.remove('hidden');
-            if (mountainsData.length === 0) {
-                loadMountains();
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('mountain-modal').classList.add('hidden');
-        }
-
-        function submitWithSelection() {
-            if (selectedMountains.size === 0) {
-                alert('Pilih minimal 1 gunung untuk assessment');
+        function submitMountainSelection() {
+            if (!selectedMountainId) {
+                document.getElementById('no-selection-error').classList.remove('hidden');
                 return;
             }
 
-            document.getElementById('selected_mountains').value = Array.from(selectedMountains).join(',');
->>>>>>> 9e4ed4251b6119678599609497affe019495d94e
+            // Set mountain_id in form
+            document.getElementById('selected-mountain-id').value = selectedMountainId;
 
+            // Hide modal and show loading
+            closeMountainModal();
             const startBtn = document.getElementById('start-assessment-btn');
             const loadingBtn = document.getElementById('loading-btn');
-
-            closeModal();
             startBtn.style.display = 'none';
             loadingBtn.style.display = 'inline-flex';
 
-            fetch('/csrf-token')
-                .then(response => response.json())
-                .then(data => {
-                    const csrfInput = document.querySelector('input[name="_token"]');
-                    if (csrfInput) {
-                        csrfInput.value = data.csrf_token;
-                    }
-                    setTimeout(() => {
-                        document.getElementById('assessment-form').submit();
-                    }, 500);
-                })
-                .catch(error => {
-                    console.error('Error getting CSRF token:', error);
-                    const metaToken = document.querySelector('meta[name="csrf-token"]');
-                    if (metaToken) {
-                        const csrfInput = document.querySelector('input[name="_token"]');
-                        if (csrfInput) {
-                            csrfInput.value = metaToken.getAttribute('content');
-                        }
-                    }
-                    setTimeout(() => {
-                        document.getElementById('assessment-form').submit();
-                    }, 500);
-                });
+            // Submit form
+            setTimeout(() => {
+                document.getElementById('assessment-form').submit();
+            }, 500);
         }
 
+        // Reset button states on page show
         window.addEventListener('pageshow', function() {
             const startBtn = document.getElementById('start-assessment-btn');
             const loadingBtn = document.getElementById('loading-btn');
@@ -633,17 +440,21 @@
             loadingBtn.style.display = 'none';
         });
 
-        // Check URL parameters for mountain_id (from external links)
+        // Handle deep linking from external sources (e.g., muncak.id)
         window.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const mountainId = urlParams.get('mountain_id');
 
             if (mountainId) {
-                const mountainCard = document.querySelector(`[data-mountain-id="${mountainId}"]`);
-                if (mountainCard) {
-                    mountainCard.click();
-                    // Scroll to assessment section
-                    document.getElementById('start-assessment').scrollIntoView({ behavior: 'smooth' });
+                // Auto-open modal and pre-select mountain
+                const mountain = mountainsData.find(m => m.id == mountainId);
+                if (mountain) {
+                    openMountainModal();
+                    selectMountain(mountain.id, mountain.name);
+                    // Scroll modal into view
+                    setTimeout(() => {
+                        document.getElementById('mountain-modal').scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
                 }
             }
         });
