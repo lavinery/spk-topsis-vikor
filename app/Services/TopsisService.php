@@ -555,15 +555,14 @@ final class TopsisService
                     }
                 } elseif ($c->source === 'MOUNTAIN') {
                     $val = is_numeric($m?->elevation_m) ? (float)$m->elevation_m : null; // C15
-                } else { // ROUTE
+                } else { // ROUTE - Apply normalization to ensure consistent scale
                     $val = match ($c->code) {
-                        'C16' => is_numeric($r->elevation_gain_m) ? (float)$r->elevation_gain_m : null,
+                        'C16' => $this->normalizeRouteValue($r->elevation_gain_m, 'C16'),
                         'C17' => $this->mapLandCoverKey($c->id, $r->land_cover_key),
-                        'C18' => is_numeric($r->distance_km) ? (float)$r->distance_km : null,
-                        'C19' => is_numeric($r->slope_class) ? (float)$r->slope_class
-                            : (is_numeric($r->slope_deg) ? (float)$r->slope_deg : null),
-                        'C20' => is_numeric($r->water_sources_score) ? (float)$r->water_sources_score : null,
-                        'C21' => is_numeric($r->support_facility_score) ? (float)$r->support_facility_score : null,
+                        'C18' => $this->normalizeRouteValue($r->distance_km, 'C18'),
+                        'C19' => $this->normalizeRouteValue($r->slope_class ?? $r->slope_deg, 'C19'),
+                        'C20' => $this->normalizeRouteValue($r->water_sources_score, 'C20'),
+                        'C21' => $this->normalizeRouteValue($r->support_facility_score, 'C21'),
                         default => null
                     };
                 }
@@ -715,17 +714,17 @@ final class TopsisService
                 return ['ranking' => [], 'CC' => [], 'rows' => []];
             }
 
-            // Get weights
+            // Get weights (use associative array format for consistency)
             $W = [];
             if (!empty($overrideWeights)) {
                 foreach ($cols as $code) {
-                    $W[] = (float)($overrideWeights[$code] ?? 0);
+                    $W[$code] = (float)($overrideWeights[$code] ?? 0);
                 }
                 // Normalize weights
                 $sum = array_sum($W);
                 if ($sum > 0) {
-                    foreach ($W as &$w) {
-                        $w /= $sum;
+                    foreach ($W as $k => $v) {
+                        $W[$k] = $v / $sum;
                     }
                 }
             } else {
@@ -736,7 +735,7 @@ final class TopsisService
             $n = count($X[0]);
 
             if ($m === 0 || $n === 0 || count($W) !== $n) {
-                return ['ranking' => [], 'CC' => [], 'rows' => [], 'cols' => $cols, 'weights' => count($cols) === count($W) ? array_combine($cols, $W) : []];
+                return ['ranking' => [], 'CC' => [], 'rows' => [], 'cols' => $cols, 'weights' => $W];
             }
 
             // Simple TOPSIS calculation
@@ -749,16 +748,17 @@ final class TopsisService
                     for ($k = 0; $k < $m; $k++) {
                         $sum += $X[$k][$j] * $X[$k][$j];
                     }
-                    $R[$i][$j] = $X[$i][$j] / sqrt($sum);
+                    $R[$i][$j] = ($sum > 0) ? ($X[$i][$j] / sqrt($sum)) : 0;
                 }
             }
 
-            // Weighted matrix
+            // Weighted matrix (use associative array indexing)
             $Y = [];
             for ($i = 0; $i < $m; $i++) {
                 $Y[$i] = [];
                 for ($j = 0; $j < $n; $j++) {
-                    $Y[$i][$j] = $R[$i][$j] * $W[$j];
+                    $w = $W[$cols[$j]] ?? 0.0;
+                    $Y[$i][$j] = $R[$i][$j] * $w;
                 }
             }
 
@@ -806,7 +806,7 @@ final class TopsisService
                 'CC' => $CC,
                 'rows' => $rows,
                 'cols' => $cols,
-                'weights' => count($cols) === count($W) ? array_combine($cols, $W) : []
+                'weights' => $W  // Already in associative array format
             ];
         } catch (\Exception $e) {
             return [

@@ -169,59 +169,117 @@
             </template>
         </div>
 
-        {{-- footer (fixed) --}}
-        <div class="px-8 py-6 border-t border-neutral-line flex-shrink-0 bg-white">
-            <div class="flex items-center justify-between">
-                <button
-                    @click="$wire.prev()"
-                    :disabled="$wire.i === 0"
-                    class="inline-flex items-center px-6 py-3 rounded-xl border border-neutral-line text-sm font-medium text-neutral-text disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-line/20 hover:border-brand/30 transition-colors duration-150"
-                >
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                    Sebelumnya
-                </button>
-
-                {{-- Progress dots --}}
-                <div class="flex items-center gap-2">
+        {{-- footer (fixed) - RESPONSIVE --}}
+        <div class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-t border-neutral-200 flex-shrink-0 bg-white safe-bottom">
+            <!-- Mobile Layout (< 640px) -->
+            <div class="sm:hidden space-y-3">
+                <!-- Progress dots (mobile top) -->
+                <div class="flex items-center justify-center gap-2">
                     <template x-for="(step, idx) in $wire.steps" :key="idx">
                         <div class="w-2 h-2 rounded-full transition-colors duration-150"
-                             :class="idx <= $wire.i ? 'bg-brand' : 'bg-gray-300'"></div>
+                             :class="idx <= $wire.i ? 'bg-primary-500' : 'bg-neutral-300'"></div>
                     </template>
                 </div>
 
-                {{-- Finish button (only on last step) --}}
-                <div x-show="$wire.i === $wire.steps.length - 1">
+                <!-- Buttons (mobile full width) -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button
+                        @click="$wire.prev()"
+                        :disabled="$wire.i === 0"
+                        class="btn-touch inline-flex items-center justify-center px-4 py-3 rounded-xl border-2 border-neutral-200 text-sm font-medium text-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 hover:border-primary-300 transition-all"
+                    >
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        <span class="hidden xs:inline">Sebelumnya</span>
+                        <span class="inline xs:hidden">Prev</span>
+                    </button>
+
+                    <!-- Finish button (mobile, last step) -->
                     <button
                         @click="$wire.finishAndRun()"
-                        class="inline-flex items-center px-8 py-3 rounded-xl bg-green-600 text-white hover:bg-green-700 transition-colors duration-150 font-semibold shadow-lg"
+                        x-show="$wire.i === $wire.steps.length - 1"
+                        class="btn-touch inline-flex items-center justify-center px-4 py-3 rounded-xl bg-success-600 text-white hover:bg-success-700 transition-all font-semibold shadow-md"
+                    >
+                        <svg class="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Hitung</span>
+                    </button>
+
+                    <!-- Next button (mobile, not last step) -->
+                    <button
+                        @click="$wire.next()"
+                        x-show="$wire.i < $wire.steps.length - 1"
+                        class="btn-touch inline-flex items-center justify-center px-4 py-3 rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition-all font-semibold shadow-md"
+                    >
+                        <span class="hidden xs:inline">Berikutnya</span>
+                        <span class="inline xs:hidden">Next</span>
+                        <svg class="w-4 h-4 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Help text (mobile) -->
+                <p class="text-xs text-neutral-500 text-center px-2">
+                    💡 Data otomatis tersimpan
+                </p>
+            </div>
+
+            <!-- Desktop/Tablet Layout (≥ 640px) -->
+            <div class="hidden sm:block">
+                <div class="flex items-center justify-between gap-4">
+                    <button
+                        @click="$wire.prev()"
+                        :disabled="$wire.i === 0"
+                        class="inline-flex items-center px-6 py-3 rounded-xl border-2 border-neutral-200 text-sm font-medium text-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 hover:border-primary-300 transition-all"
+                    >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        Sebelumnya
+                    </button>
+
+                    {{-- Progress dots --}}
+                    <div class="flex items-center gap-2">
+                        <template x-for="(step, idx) in $wire.steps" :key="idx">
+                            <div class="w-2 h-2 rounded-full transition-colors duration-150"
+                                 :class="idx <= $wire.i ? 'bg-primary-500' : 'bg-neutral-300'"></div>
+                        </template>
+                    </div>
+
+                    {{-- Finish button (desktop, last step) --}}
+                    <button
+                        @click="$wire.finishAndRun()"
+                        x-show="$wire.i === $wire.steps.length - 1"
+                        class="inline-flex items-center px-8 py-3 rounded-xl bg-success-600 text-white hover:bg-success-700 transition-all font-semibold shadow-lg"
                     >
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         Hitung TOPSIS
                     </button>
+
+                    {{-- Next button (desktop, not last step) --}}
+                    <button
+                        @click="$wire.next()"
+                        x-show="$wire.i < $wire.steps.length - 1"
+                        class="inline-flex items-center px-6 py-3 rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition-all font-semibold shadow-lg"
+                    >
+                        Berikutnya
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
                 </div>
 
-                {{-- Next button (not on last step) --}}
-                <button
-                    @click="$wire.next()"
-                    x-show="$wire.i < $wire.steps.length - 1"
-                    class="inline-flex items-center px-6 py-3 rounded-xl bg-brand text-white hover:bg-indigo-700 transition-colors duration-150 font-medium shadow-lg"
-                >
-                    Berikutnya
-                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </button>
-            </div>
-
-            {{-- Help text --}}
-            <div class="mt-4 text-center">
-                <p class="text-xs text-neutral-sub">
-                    💡 Tips: Pilih jawaban yang paling sesuai dengan kondisi Anda saat ini. Data akan otomatis tersimpan.
-                </p>
+                {{-- Help text (desktop) --}}
+                <div class="mt-4 text-center">
+                    <p class="text-xs text-neutral-500">
+                        💡 Tips: Pilih jawaban yang paling sesuai dengan kondisi Anda. Data otomatis tersimpan.
+                    </p>
+                </div>
             </div>
         </div>
 

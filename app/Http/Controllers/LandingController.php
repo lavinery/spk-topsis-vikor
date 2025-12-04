@@ -156,6 +156,7 @@ class LandingController extends Controller
             'title' => $r->input('title', $titlePrefix . ' - Assessment ' . now()->format('Y-m-d H:i')),
             'status' => 'draft',
             'top_k' => (int)($r->input('top_k', 5)),
+            'pure_formula' => false, // Include ALL criteria (USER + MOUNTAIN/ROUTE)
         ]);
 
         // 2) simpan jawaban C1..C14 (value_raw)

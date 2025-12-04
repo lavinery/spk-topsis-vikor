@@ -34,7 +34,17 @@
       "Bash(php -l:*)",
       "Bash(git add:*)",
       "Bash(php test-classes.php:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(php run-topsis.php:*)",
+      "Bash(php show-ranking.php:*)",
+      "Bash(php show-criteria.php:*)",
+      "Bash(php check-pure-formula.php:*)",
+      "Bash(php check-column-default.php:*)",
+      "Bash(php test-new-assessment.php:*)",
+      "Bash(php -r:*)",
+      "Bash(php check-steps-columns.php:*)",
+      "Bash(php debug-assessment.php:*)",
+      "Bash(php check-all-criteria.php:*)"
     ],
     "deny": [],
     "ask": []

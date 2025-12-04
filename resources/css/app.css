@@ -168,4 +168,92 @@ html, body {
                focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
                placeholder-gray-400 transition-all duration-150;
     }
+
+    /* ========================================
+       RESPONSIVE TABLE UTILITIES (Mobile-First)
+       ======================================== */
+
+    /* Responsive Table Wrapper with Horizontal Scroll */
+    .table-responsive {
+        @apply w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 rounded-lg;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        scrollbar-width: thin;
+    }
+
+    /* Custom Scrollbar for Table */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        @apply bg-gray-100 rounded;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        @apply bg-gray-300 rounded hover:bg-gray-400;
+    }
+
+    /* Scroll Hint Text (Mobile Only) */
+    .scroll-hint::after {
+        content: '← Geser untuk melihat lebih banyak →';
+        @apply block sm:hidden text-xs text-gray-400 text-center mt-2 py-1 bg-gray-50 rounded;
+    }
+
+    /* Touch-Friendly Button (44x44px minimum) */
+    .btn-touch {
+        @apply min-h-[44px] min-w-[44px] inline-flex items-center justify-center;
+    }
+
+    /* Mobile Card Layout (Alternative to Tables) */
+    .mobile-card {
+        @apply block sm:hidden bg-white rounded-lg border-2 border-gray-200 p-4 mb-3 shadow-sm;
+    }
+
+    .mobile-card-row {
+        @apply flex justify-between items-start py-2 border-b border-gray-100 last:border-0;
+    }
+
+    .mobile-card-label {
+        @apply text-xs font-bold text-gray-500 uppercase tracking-wide;
+    }
+
+    .mobile-card-value {
+        @apply text-sm font-medium text-gray-800 text-right;
+    }
+
+    /* Desktop Table (Hidden on Mobile) */
+    .desktop-table {
+        @apply hidden sm:table w-full;
+    }
+}
+
+/* ========================================
+   MOBILE OPTIMIZATION UTILITIES
+   ======================================== */
+@layer utilities {
+    /* Safe Area for Notched Devices (iPhone X+) */
+    .safe-top {
+        padding-top: env(safe-area-inset-top);
+    }
+
+    .safe-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* Disable Text Selection (Better Mobile UX for Buttons) */
+    .no-select {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    /* Remove Tap Highlight on Mobile */
+    .no-tap-highlight {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Touch-Friendly Spacing */
+    .touch-spacing {
+        @apply my-6 space-y-4;
+    }
 }

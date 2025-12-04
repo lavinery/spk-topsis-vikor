@@ -33,29 +33,35 @@ class TestAssessmentSeeder extends Seeder
         // Create assessment
         $assessmentId = DB::table('assessments')->insertGetId([
             'user_id' => $userId,
-            'title' => 'Test Assessment - TOPSIS Traditional',
+            'title' => 'Test Assessment - TOPSIS Realistis',
             'status' => 'draft',
+            'pure_formula' => false,  // Use all criteria (USER + MOUNTAIN + ROUTE)
             'created_at' => $now,
             'updated_at' => $now
         ]);
 
-        // Test user profile (moderate level hiker)
+        /**
+         * Test user profile: Intermediate level hiker
+         * Values normalized to 0-1 range
+         *
+         * Profile: 25 years old, good physical condition, minimal health issues,
+         * well equipped, highly motivated, moderate experience
+         */
         $userAnswers = [
-            'C1' => 25,        // Usia: 25 tahun
-            'C2' => 4,         // Physical Fitness: 4/5 (good)
-            'C3' => 1,         // Riwayat Kardiovaskular: 1/5 (no issues)
-            'C4' => 3,         // Kepercayaan Diri: 3/5 (moderate)
-            'C5' => 4,         // Kepemilikan Peralatan: 4/5 (well equipped)
-            'C6' => 3,         // Pengetahuan P3K: 3/5 (basic)
-            'C7' => 'high',    // Motivasi Pendakian: high
-            'C8' => 3,         // Pengalaman Pendakian: 3 times
-            'C9' => 3,         // Perencanaan Logistik: 3/5 (moderate)
-            'C10' => 3,        // Skill Penggunaan Alat: 3/5 (moderate)
-            'C11' => 3,        // Kemampuan Survival: 3/5 (moderate)
-            'C12' => 4,        // Kesiapan Tim: 4/5 (good)
-            'C13' => 2,        // Kehadiran Pemandu: 2/5 (prefer with guide)
-            'C14' => 3,        // Pembagian Tugas Tim: 3/5 (moderate)
+            // === PROFIL PENDAKI (11 kriteria) ===
+            'C1' => 0.60,      // Usia: 0.60 (25 tahun, moderately young)
+            'C2' => 0.75,      // Kondisi Fisik: 0.75 (good fitness)
+            'C3' => 0.20,      // Riwayat Penyakit: 0.20 (minimal issues, sehat)
+            'C5' => 0.80,      // Kepemilikan Peralatan: 0.80 (well equipped)
+            'C7' => 0.90,      // Motivasi Pendakian: 0.90 (highly motivated)
+            'C8' => 0.60,      // Pengalaman Pendakian: 0.60 (moderate, ~5-6 kali)
+            'C9' => 0.70,      // Perencanaan Logistik: 0.70 (good planning)
+            'C10' => 0.65,     // Keterampilan Alat: 0.65 (competent)
+            'C11' => 0.70,     // Kemampuan Survival: 0.70 (decent survival skills)
+            'C12' => 0.75,     // Kesiapan Tim: 0.75 (solid team ready)
+            'C13' => 0.40,     // Kehadiran Pemandu: 0.40 (prefer with guide for safety)
         ];
+        // Total: 11 kriteria profil pendaki (C4, C6, C14 dihapus)
 
         // Insert assessment answers
         foreach ($userAnswers as $code => $value) {
@@ -71,10 +77,10 @@ class TestAssessmentSeeder extends Seeder
             }
         }
 
-        // Create assessment alternatives (all routes from test mountains)
+        // Create assessment alternatives (select diverse routes for testing)
         $routeIds = DB::table('routes')
             ->join('mountains', 'routes.mountain_id', '=', 'mountains.id')
-            ->whereIn('mountains.name', ['Semeru', 'Rinjani', 'Gede', 'Pangrango', 'Slamet', 'Merbabu', 'Sindoro', 'Sumbing', 'Lawu', 'Kerinci'])
+            ->whereIn('mountains.name', ['Prau', 'Papandayan', 'Bromo', 'Gede', 'Merbabu', 'Lawu', 'Semeru', 'Rinjani'])
             ->pluck('routes.id')
             ->toArray();
 
@@ -82,13 +88,17 @@ class TestAssessmentSeeder extends Seeder
             DB::table('assessment_alternatives')->insert([
                 'assessment_id' => $assessmentId,
                 'route_id' => $routeId,
+                'is_excluded' => false,
                 'created_at' => $now,
                 'updated_at' => $now
             ]);
         }
 
-        echo "Test assessment created with ID: {$assessmentId}\n";
-        echo "User answers: " . json_encode($userAnswers, JSON_PRETTY_PRINT) . "\n";
-        echo "Number of alternatives: " . count($routeIds) . "\n";
+        $this->command->info("✅ Test assessment created with ID: {$assessmentId}");
+        $this->command->info("📊 Number of alternatives: " . count($routeIds));
+        $this->command->table(
+            ['Criteria', 'Value'],
+            collect($userAnswers)->map(fn($v, $k) => [$k, $v])->toArray()
+        );
     }
 }
