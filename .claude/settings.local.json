@@ -29,7 +29,12 @@
       "Read(/C:\\laragon\\www\\spk-topsis\\database\\migrations/**)",
       "Bash(php artisan:*)",
       "Bash(curl:*)",
-      "Read(/C:\\laragon\\www\\spk-topsis\\routes/**)"
+      "Read(/C:\\laragon\\www\\spk-topsis\\routes/**)",
+      "Bash(composer dump-autoload:*)",
+      "Bash(php -l:*)",
+      "Bash(git add:*)",
+      "Bash(php test-classes.php:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
