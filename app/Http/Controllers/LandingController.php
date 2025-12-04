@@ -111,6 +111,7 @@ class LandingController extends Controller
             return redirect()->route('admin.dashboard')->with('error', 'Admin tidak dapat melakukan assessment.');
         }
 
+<<<<<<< HEAD
         // VALIDASI: Gunung harus dipilih
         $mountainId = $r->input('mountain_id');
         if (!$mountainId) {
@@ -126,6 +127,8 @@ class LandingController extends Controller
             return redirect()->route('landing')->with('error', 'Gunung yang dipilih tidak tersedia atau sedang ditutup.');
         }
 
+=======
+>>>>>>> 9e4ed4251b6119678599609497affe019495d94e
         // 1) buat assessment dengan weight preset dan konfigurasi
         $a = Assessment::create([
           'user_id'=>auth()->id(),
@@ -146,9 +149,30 @@ class LandingController extends Controller
         $normalizer = app('App\Services\AnswerNormalizer');
         $normalizer->normalize($a);
 
+<<<<<<< HEAD
         // 4) pilih alternatif HANYA dari gunung yang dipilih
         $q = RouteModel::with('mountain')
             ->whereHas('mountain', fn($x)=>$x->where('id', $mountainId)->where('status','!=','closed'));
+=======
+        // 4) pilih alternatif berdasarkan gunung yang dipilih user
+        $selectedMountains = $r->input('selected_mountains');
+
+        if ($selectedMountains) {
+            // User memilih gunung tertentu
+            $mountainIds = explode(',', $selectedMountains);
+            $q = RouteModel::with('mountain')
+                ->whereHas('mountain', function($x) use ($mountainIds) {
+                    $x->where('status','!=','closed')
+                      ->whereIn('id', $mountainIds);
+                });
+        } else {
+            // Jika tidak ada pilihan, ambil semua
+            $q = RouteModel::with('mountain')->whereHas('mountain', fn($x)=>$x->where('status','!=','closed'));
+            if ($prov = $r->input('province')) {
+                $q->whereHas('mountain', fn($x)=>$x->where('province',$prov));
+            }
+        }
+>>>>>>> 9e4ed4251b6119678599609497affe019495d94e
 
         $routeIds = $q->pluck('id')->toArray();
 
@@ -158,10 +182,50 @@ class LandingController extends Controller
 
         $bulk = [];
         foreach ($routeIds as $rid) $bulk[] = ['assessment_id'=>$a->id,'route_id'=>$rid,'is_excluded'=>false];
-        AssessmentAlternative::insert($bulk);
+
+        if (!empty($bulk)) {
+            AssessmentAlternative::insert($bulk);
+        }
 
         // 5) redirect ke wizard untuk mengisi kuesioner
         return redirect()->route('assess.wizard', $a->id)->with('next','Silakan isi kuesioner untuk mendapatkan rekomendasi jalur terbaik di ' . $mountain->name . '.');
+    }
+
+    /**
+     * API endpoint to get mountains list with routes
+     */
+    public function getMountainsList()
+    {
+        try {
+            $mountains = \App\Models\Mountain::where('status', '!=', 'closed')
+                ->with(['routes' => function($query) {
+                    $query->select('id', 'mountain_id', 'name', 'distance_km', 'elevation_gain_m');
+                }])
+                ->select('id', 'name', 'province', 'elevation_m')
+                ->get()
+                ->map(function($mountain) {
+                    return [
+                        'id' => $mountain->id,
+                        'name' => $mountain->name,
+                        'province' => $mountain->province,
+                        'elevation' => $mountain->elevation_m,
+                        'routes' => $mountain->routes->map(function($route) {
+                            return [
+                                'id' => $route->id,
+                                'name' => $route->name,
+                                'distance_km' => $route->distance_km,
+                                'elevation_gain_m' => $route->elevation_gain_m
+                            ];
+                        })
+                    ];
+                });
+
+            return response()->json($mountains);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to load mountains list: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
