@@ -144,15 +144,16 @@ class LandingController extends Controller
             return redirect()->route('landing')->with('error', 'Tidak ada gunung yang valid dari pilihan Anda.');
         }
 
-        // Ambil gunung pertama untuk mountain_id dan title
-        $primaryMountain = $mountains->first();
+        // Generate title berdasarkan gunung yang dipilih
         $mountainNames = $mountains->pluck('name')->join(', ');
+        $titlePrefix = $mountains->count() > 1
+            ? $mountains->count() . ' Gunung'
+            : $mountains->first()->name;
 
         // 1) buat assessment dengan weight preset dan konfigurasi
         $a = Assessment::create([
             'user_id' => auth()->id(),
-            'mountain_id' => $primaryMountain->id,
-            'title' => $r->input('title', ($mountains->count() > 1 ? 'Multi-Mountain' : $primaryMountain->name) . ' - Assessment ' . now()->format('Y-m-d H:i')),
+            'title' => $r->input('title', $titlePrefix . ' - Assessment ' . now()->format('Y-m-d H:i')),
             'status' => 'draft',
             'top_k' => (int)($r->input('top_k', 5)),
         ]);
