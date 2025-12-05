@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Assessment;
 use App\Services\AnswerNormalizer;
-use App\Services\ConstraintService;
 use App\Services\TopsisService;
 use App\Jobs\RunTopsisJob;
 use Illuminate\Http\Request;
@@ -12,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class AssessmentRunController extends Controller
 {
-    public function run(Request $r, $id, AnswerNormalizer $norm, ConstraintService $cons, TopsisService $topsis)
+    public function run(Request $r, $id, AnswerNormalizer $norm, TopsisService $topsis)
     {
         try {
             $a = Assessment::with(['answers','alternatives.route.mountain'])->findOrFail($id);
@@ -47,9 +46,6 @@ class AssessmentRunController extends Controller
 
             // pastikan jawaban user sudah dinormalisasi (value_numeric)
             $norm->normalize($a);
-
-            // terapkan constraint (exclude alternatif berisiko)
-            $cons->apply($a);
 
             // jalankan TOPSIS
             $topsis->run($a);

@@ -1,36 +1,18 @@
 {{-- resources/views/livewire/admin/routes-crud.blade.php --}}
 <div class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Page Header with Add Button -->
+        <!-- Page Header with Back Button -->
         <div class="mb-6">
-            <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('admin.dashboard') }}" class="text-neutral-sub hover:text-neutral-text transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                    </a>
-                    <h1 class="text-2xl font-bold text-neutral-text">Manajemen Jalur Pendakian</h1>
-                </div>
-                <button wire:click="create" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-brand text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            <div class="flex items-center gap-3 mb-2">
+                <a href="{{ route('admin.dashboard') }}" class="text-neutral-sub hover:text-neutral-text transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
-                    Tambah Jalur
-                </button>
+                </a>
+                <h1 class="text-2xl font-bold text-neutral-text">Manajemen Jalur Pendakian</h1>
             </div>
             <p class="text-sm text-neutral-sub ml-9">Kelola data jalur pendakian untuk setiap gunung</p>
         </div>
-
-        <!-- Success Message -->
-        @if (session('ok'))
-            <div class="mb-6 flex items-center gap-2 text-sm text-green-700 bg-green-50 px-4 py-3 rounded-lg border border-green-200">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                {{ session('ok') }}
-            </div>
-        @endif
 
         <!-- Search Bar -->
         <div class="bg-white rounded-xl border border-neutral-line shadow-sm p-4 mb-6">
@@ -48,7 +30,7 @@
         </div>
 
         {{-- Import Form --}}
-        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 mb-6">
+        <div class="ui-card mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
             <div class="flex items-start gap-4">
                 <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,8 +41,20 @@
                     <h3 class="text-lg font-bold text-blue-900 mb-2">Import Routes</h3>
                     <p class="text-sm text-blue-700 mb-4">Upload file Excel atau CSV untuk mengimport banyak jalur sekaligus</p>
 
+                    @if (session('ok'))
+                        <div class="mb-4 p-3 bg-green-50 border-2 border-green-300 rounded-lg text-green-800 text-sm font-medium">
+                            <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            {{ session('ok') }}
+                        </div>
+                    @endif
+
                     @if (session('error'))
                         <div class="mb-4 p-3 bg-red-50 border-2 border-red-300 rounded-lg text-red-800 text-sm font-medium">
+                            <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
                             {{ session('error') }}
                         </div>
                     @endif
@@ -69,7 +63,10 @@
                         @csrf
                         <input type="file" name="file" accept=".xlsx,.csv"
                                class="border-2 border-gray-300 rounded-lg text-sm file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white file:font-medium hover:file:bg-indigo-700 file:transition-colors" required>
-                        <button type="submit" class="px-5 py-2.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm">
+                        <button type="submit" class="btn-primary">
+                            <svg class="w-4 h-4 inline-block mr-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                            </svg>
                             Import Sekarang
                         </button>
                     </form>
@@ -86,6 +83,118 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        {{-- Form Input --}}
+        <div class="bg-white rounded-xl border border-neutral-line shadow-sm p-6 mb-6">
+            <h2 class="text-lg font-semibold text-neutral-text mb-4">{{ $editingId ? 'Edit Jalur' : 'Tambah Jalur Baru' }}</h2>
+            <form wire:submit.prevent="save">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-text mb-2">
+                            Gunung <span class="text-red-500">*</span>
+                        </label>
+                        <select wire:model="mountain_id" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all">
+                            <option value="">-- Pilih Gunung --</option>
+                            @foreach ($mountains as $m)
+                                <option value="{{ $m->id }}">{{ $m->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('mountain_id') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-text mb-2">
+                            Nama Jalur <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" wire:model="name" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="Contoh: Jalur Selatan">
+                        @error('name') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-text mb-2">
+                            Panjang Jalur (km)
+                        </label>
+                        <input type="number" step="0.01" min="0" max="500" wire:model="distance_km" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="0.00">
+                        @error('distance_km') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-text mb-2">
+                            Elevasi Gain (meter)
+                        </label>
+                        <input type="number" min="0" max="9000" wire:model="elevation_gain_m" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="0">
+                        @error('elevation_gain_m') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-text mb-2">
+                            Kelas Kecuraman (1–6)
+                        </label>
+                        <input type="number" min="1" max="6" wire:model="slope_class" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="1-6">
+                        @error('slope_class') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                        <p class="text-xs text-neutral-sub mt-1">1 = Landai, 6 = Sangat Terjal</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-text mb-2">
+                            Tutupan Lahan
+                        </label>
+                        <input type="text" maxlength="50" wire:model="land_cover_key" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="hutan-lebat / savana / terbuka">
+                        @error('land_cover_key') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-text mb-2">
+                            Sumber Air (0–10)
+                        </label>
+                        <input type="number" min="0" max="10" wire:model="water_sources_score" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="0-10">
+                        @error('water_sources_score') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                        <p class="text-xs text-neutral-sub mt-1">Skor ketersediaan sumber air</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-text mb-2">
+                            Sarana Pendukung (0–10)
+                        </label>
+                        <input type="number" min="0" max="10" wire:model="support_facility_score" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="0-10">
+                        @error('support_facility_score') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                        <p class="text-xs text-neutral-sub mt-1">Skor kelengkapan fasilitas pendukung</p>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="flex items-center gap-3 cursor-pointer p-4 rounded-lg border border-neutral-line hover:bg-gray-50 transition-colors">
+                            <input id="permit" type="checkbox" wire:model="permit_required" class="w-4 h-4 text-brand border-neutral-line rounded focus:ring-brand">
+                            <div>
+                                <span class="text-sm font-medium text-neutral-text">Perlu Izin</span>
+                                <p class="text-xs text-neutral-sub mt-0.5">Jalur ini memerlukan izin khusus</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 mt-6 pt-6 border-t border-neutral-line">
+                    <button type="submit" class="inline-flex items-center px-6 py-2.5 rounded-lg bg-brand text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        {{ $editingId ? 'Update' : 'Simpan' }}
+                    </button>
+                    @if ($editingId)
+                        <button type="button" wire:click="resetForm" class="px-6 py-2.5 rounded-lg bg-gray-100 text-neutral-text font-medium hover:bg-gray-200 transition-colors">
+                            Batal
+                        </button>
+                    @endif
+                    @if (session('ok'))
+                        <div class="flex items-center gap-2 text-sm text-green-700 bg-green-50 px-4 py-2 rounded-lg border border-green-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            {{ session('ok') }}
+                        </div>
+                    @endif
+                </div>
+            </form>
         </div>
 
         {{-- Data Table --}}
@@ -156,13 +265,7 @@
                                     <button wire:click="edit({{ $r->id }})" class="px-3 py-1.5 rounded-lg bg-brand text-white text-xs hover:bg-indigo-700 transition-colors">
                                         Edit
                                     </button>
-                                    <button
-                                        @click="$dispatch('open-delete-modal', {
-                                            id: {{ $r->id }},
-                                            name: '{{ $r->name }}',
-                                            details: 'Gunung: {{ $r->mountain?->name }}\nPanjang: {{ $r->distance_km }} km\nElevasi: {{ number_format($r->elevation_gain_m) }} m\nKecuraman: {{ $r->slope_class }}/6\n\nData jalur ini akan dihapus permanen!'
-                                        })"
-                                        class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs hover:bg-red-100 transition-colors">
+                                    <button wire:click="delete({{ $r->id }})" onclick="return confirm('Yakin ingin menghapus jalur \'{{ $r->name }}\' di {{ $r->mountain?->name }}?\n\nData jalur yang akan terhapus:\n- Panjang: {{ $r->distance_km }} km\n- Elevasi: {{ number_format($r->elevation_gain_m) }} m\n- Kecuraman: {{ $r->slope_class }}/5\n\nProses ini tidak dapat dibatalkan!')" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs hover:bg-red-100 transition-colors">
                                         Hapus
                                     </button>
                                 </div>
@@ -175,7 +278,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
                                 </svg>
                                 <p class="text-neutral-sub text-sm">Tidak ada data jalur</p>
-                                <p class="text-xs text-neutral-sub mt-1">Klik "Tambah Jalur" atau import dari file</p>
+                                <p class="text-xs text-neutral-sub mt-1">Tambahkan jalur baru atau import dari file</p>
                             </td>
                         </tr>
                     @endforelse
@@ -190,108 +293,4 @@
             @endif
         </div>
     </div>
-
-    {{-- Form Modal --}}
-    <x-form-modal title="{{ $editingId ? 'Edit Jalur' : 'Tambah Jalur Baru' }}">
-        <form wire:submit.prevent="save">
-            <div class="grid md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-neutral-text mb-2">
-                        Gunung <span class="text-red-500">*</span>
-                    </label>
-                    <select wire:model="mountain_id" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all">
-                        <option value="">-- Pilih Gunung --</option>
-                        @foreach ($mountains as $m)
-                            <option value="{{ $m->id }}">{{ $m->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('mountain_id') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-neutral-text mb-2">
-                        Nama Jalur <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" wire:model="name" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="Contoh: Jalur Selatan">
-                    @error('name') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-neutral-text mb-2">
-                        Panjang Jalur (km)
-                    </label>
-                    <input type="number" step="0.01" min="0" max="500" wire:model="distance_km" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="0.00">
-                    @error('distance_km') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-neutral-text mb-2">
-                        Elevasi Gain (meter)
-                    </label>
-                    <input type="number" min="0" max="9000" wire:model="elevation_gain_m" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="0">
-                    @error('elevation_gain_m') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-neutral-text mb-2">
-                        Kelas Kecuraman (1–6)
-                    </label>
-                    <input type="number" min="1" max="6" wire:model="slope_class" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="1-6">
-                    @error('slope_class') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                    <p class="text-xs text-neutral-sub mt-1">1 = Landai, 6 = Sangat Terjal</p>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-neutral-text mb-2">
-                        Tutupan Lahan
-                    </label>
-                    <input type="text" maxlength="50" wire:model="land_cover_key" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="hutan-lebat / savana / terbuka">
-                    @error('land_cover_key') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-neutral-text mb-2">
-                        Sumber Air (0–10)
-                    </label>
-                    <input type="number" min="0" max="10" wire:model="water_sources_score" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="0-10">
-                    @error('water_sources_score') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                    <p class="text-xs text-neutral-sub mt-1">Skor ketersediaan sumber air</p>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-neutral-text mb-2">
-                        Sarana Pendukung (0–10)
-                    </label>
-                    <input type="number" min="0" max="10" wire:model="support_facility_score" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="0-10">
-                    @error('support_facility_score') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                    <p class="text-xs text-neutral-sub mt-1">Skor kelengkapan fasilitas pendukung</p>
-                </div>
-
-                <div class="md:col-span-2">
-                    <label class="flex items-center gap-3 cursor-pointer p-4 rounded-lg border border-neutral-line hover:bg-gray-50 transition-colors">
-                        <input id="permit" type="checkbox" wire:model="permit_required" class="w-4 h-4 text-brand border-neutral-line rounded focus:ring-brand">
-                        <div>
-                            <span class="text-sm font-medium text-neutral-text">Perlu Izin</span>
-                            <p class="text-xs text-neutral-sub mt-0.5">Jalur ini memerlukan izin khusus</p>
-                        </div>
-                    </label>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-neutral-line">
-                <button type="button" @click="$dispatch('close-form-modal')" class="px-5 py-2.5 rounded-lg bg-gray-100 text-neutral-text font-medium hover:bg-gray-200 transition-colors">
-                    Batal
-                </button>
-                <button type="submit" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-brand text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    {{ $editingId ? 'Update' : 'Simpan' }}
-                </button>
-            </div>
-        </form>
-    </x-form-modal>
-
-    {{-- Delete Confirmation Modal --}}
-    <x-delete-modal title="Hapus Jalur Pendakian" onConfirm="delete" />
 </div>

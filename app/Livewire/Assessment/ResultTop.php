@@ -12,6 +12,9 @@ class ResultTop extends Component
     public array $top = [];     // [ ['name'=>'GnX — Jalur Y', 'cc'=>0.73], ... ]
     public array $all = [];     // (opsional) full ranking untuk admin toggle
     public array $explain = []; // kontribusi pro/kontra untuk Top-5
+    public int $totalCriteria = 0;
+    public int $userCriteria = 0;
+    public int $systemCriteria = 0;
 
     public function mount($id)
     {
@@ -57,6 +60,11 @@ class ResultTop extends Component
             $this->explain[$i] = $tc[$i] ?? ['pro'=>[],'con'=>[]];
         }
 
+        // Get criteria counts dynamically
+        $criteria = \App\Models\Criterion::where('active', 1)->get();
+        $this->totalCriteria = $criteria->count();
+        $this->userCriteria = $criteria->where('source', 'USER')->count();
+        $this->systemCriteria = $criteria->whereIn('source', ['MOUNTAIN', 'ROUTE'])->count();
     }
 
 

@@ -52,7 +52,7 @@
                     </div>
                     <div>
                         <div class="text-blue-700 font-medium">Kriteria Evaluasi</div>
-                        <div class="text-blue-600">21 Kriteria (14 User + 7 Sistem)</div>
+                        <div class="text-blue-600">{{ $totalCriteria }} Kriteria ({{ $userCriteria }} User + {{ $systemCriteria }} Sistem)</div>
                     </div>
                     <div>
                         <div class="text-blue-700 font-medium">Jalur Tersedia</div>

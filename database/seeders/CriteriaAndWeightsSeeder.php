@@ -16,41 +16,41 @@ class CriteriaAndWeightsSeeder extends Seeder
         $now = Carbon::now();
 
         /**
-         * 18 Kriteria Pendakian Gunung
+         * 18 Kriteria Pendakian Gunung (C1-C18)
          *
-         * PROFIL PENDAKI (11 kriteria)
-         * KARAKTERISTIK JALUR (7 kriteria)
+         * PROFIL PENDAKI (11 kriteria: C1-C11)
+         * KARAKTERISTIK JALUR (7 kriteria: C12-C18)
          *
          * Format: [code, name, type, source, data_type, is_fuzzy]
          * is_fuzzy = true  → Fuzzy logic untuk data subjektif/ordinal
          * is_fuzzy = false → Crisp value untuk data objektif/numeric
          */
         $crit = [
-            // === PROFIL PENDAKI (C1-C13) ===
+            // === PROFIL PENDAKI (C1-C11) ===
             ['C1', 'Usia', 'cost', 'USER', 'numeric', false],        // Numeric langsung (tahun)
             ['C2', 'Kondisi Fisik', 'benefit', 'USER', 'ordinal', true],  // Ordinal → FUZZY
             ['C3', 'Riwayat Penyakit', 'cost', 'USER', 'ordinal', true],  // Ordinal → FUZZY
-            ['C5', 'Kepemilikan Peralatan', 'benefit', 'USER', 'ordinal', true],  // Ordinal → FUZZY
-            ['C7', 'Motivasi Pendakian', 'benefit', 'USER', 'categorical', true], // Categorical → FUZZY
-            ['C8', 'Pengalaman Pendakian', 'benefit', 'USER', 'numeric', false],  // Numeric langsung (jumlah)
-            ['C9', 'Perencanaan Logistik', 'benefit', 'USER', 'ordinal', true],   // Ordinal → FUZZY
-            ['C10', 'Keterampilan Alat Pendakian', 'benefit', 'USER', 'ordinal', true], // Ordinal → FUZZY
-            ['C11', 'Kemampuan Bertahan Hidup', 'benefit', 'USER', 'ordinal', true],    // Ordinal → FUZZY
-            ['C12', 'Kesiapan Anggota Pendakian', 'benefit', 'USER', 'ordinal', true],  // Ordinal → FUZZY
-            ['C13', 'Kehadiran Pemandu', 'benefit', 'USER', 'ordinal', true],           // Ordinal → FUZZY
+            ['C4', 'Kepemilikan Peralatan', 'benefit', 'USER', 'ordinal', true],  // Ordinal → FUZZY
+            ['C5', 'Motivasi Pendakian', 'benefit', 'USER', 'categorical', true], // Categorical → FUZZY
+            ['C6', 'Pengalaman Pendakian', 'benefit', 'USER', 'numeric', false],  // Numeric langsung (jumlah)
+            ['C7', 'Perencanaan Logistik', 'benefit', 'USER', 'ordinal', true],   // Ordinal → FUZZY
+            ['C8', 'Keterampilan Alat Pendakian', 'benefit', 'USER', 'ordinal', true], // Ordinal → FUZZY
+            ['C9', 'Kemampuan Bertahan Hidup', 'benefit', 'USER', 'ordinal', true],    // Ordinal → FUZZY
+            ['C10', 'Kesiapan Anggota Pendakian', 'benefit', 'USER', 'ordinal', true],  // Ordinal → FUZZY
+            ['C11', 'Kehadiran Pemandu', 'benefit', 'USER', 'ordinal', true],           // Ordinal → FUZZY
 
-            // === KARAKTERISTIK JALUR (C15-C21) - Semua dari database, tidak perlu fuzzy ===
-            ['C15', 'Ketinggian Gunung (mdpl)', 'cost', 'MOUNTAIN', 'numeric', false],
-            ['C16', 'Elevasi Jalur (m)', 'cost', 'ROUTE', 'numeric', false],
-            ['C17', 'Tutupan Lahan', 'cost', 'ROUTE', 'categorical', false],  // Category mapping
-            ['C18', 'Panjang Jalur (km)', 'cost', 'ROUTE', 'numeric', false],
-            ['C19', 'Kecuraman Jalur', 'cost', 'ROUTE', 'numeric', false],
-            ['C20', 'Ketersediaan Sumber Air', 'benefit', 'ROUTE', 'ordinal', false],
-            ['C21', 'Ketersediaan Sarana Pendukung', 'benefit', 'ROUTE', 'ordinal', false],
+            // === KARAKTERISTIK JALUR (C12-C18) - Semua dari database, tidak perlu fuzzy ===
+            ['C12', 'Ketinggian Gunung (mdpl)', 'cost', 'MOUNTAIN', 'numeric', false],
+            ['C13', 'Elevasi Jalur (m)', 'cost', 'ROUTE', 'numeric', false],
+            ['C14', 'Tutupan Lahan', 'cost', 'ROUTE', 'categorical', false],  // Category mapping
+            ['C15', 'Panjang Jalur (km)', 'cost', 'ROUTE', 'numeric', false],
+            ['C16', 'Kecuraman Jalur', 'cost', 'ROUTE', 'numeric', false],
+            ['C17', 'Ketersediaan Sumber Air', 'benefit', 'ROUTE', 'ordinal', false],
+            ['C18', 'Ketersediaan Sarana Pendukung', 'benefit', 'ROUTE', 'ordinal', false],
         ];
 
-        // Delete old criteria that are no longer used
-        DB::table('criteria')->whereIn('code', ['C4', 'C6', 'C14'])->delete();
+        // Delete old criteria codes that are no longer used (old numbering)
+        DB::table('criteria')->whereIn('code', ['C5', 'C7', 'C8', 'C9', 'C10', 'C12', 'C13', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20', 'C21'])->delete();
 
         $rows = [];
         foreach ($crit as [$code, $name, $type, $source, $dt, $isFuzzy]) {
@@ -76,52 +76,52 @@ class CriteriaAndWeightsSeeder extends Seeder
          *
          * Prioritas Tinggi (8-10%):
          * - C2 (Kondisi Fisik): 0.10 - Sangat penting untuk keselamatan
-         * - C8 (Pengalaman): 0.09 - Krusial untuk kemampuan pendakian
-         * - C19 (Kecuraman): 0.08 - Faktor difficulty utama
+         * - C6 (Pengalaman): 0.09 - Krusial untuk kemampuan pendakian
+         * - C16 (Kecuraman): 0.08 - Faktor difficulty utama
          *
          * Prioritas Sedang (5-7%):
          * - C1 (Usia): 0.07 - Mempengaruhi stamina
          * - C3 (Riwayat Penyakit): 0.07 - Keselamatan
-         * - C11 (Survival): 0.06 - Penting untuk emergency
-         * - C16 (Elevasi): 0.06 - Menentukan difficulty
-         * - C18 (Panjang Jalur): 0.06 - Menentukan durasi
+         * - C9 (Survival): 0.06 - Penting untuk emergency
+         * - C13 (Elevasi): 0.06 - Menentukan difficulty
+         * - C15 (Panjang Jalur): 0.06 - Menentukan durasi
          *
          * Prioritas Normal (3-5%):
-         * - C5 (Peralatan): 0.05
-         * - C9 (Logistik): 0.05
-         * - C10 (Keterampilan): 0.05
-         * - C12 (Tim): 0.04
-         * - C15 (Ketinggian): 0.04
-         * - C17 (Tutupan Lahan): 0.04
+         * - C4 (Peralatan): 0.05
+         * - C7 (Logistik): 0.05
+         * - C8 (Keterampilan): 0.05
+         * - C10 (Tim): 0.04
+         * - C12 (Ketinggian): 0.04
+         * - C14 (Tutupan Lahan): 0.04
          *
          * Prioritas Rendah (2-3%):
-         * - C7 (Motivasi): 0.03
-         * - C13 (Pemandu): 0.03
-         * - C20 (Air): 0.04
-         * - C21 (Sarana): 0.04
+         * - C5 (Motivasi): 0.03
+         * - C11 (Pemandu): 0.03
+         * - C17 (Air): 0.04
+         * - C18 (Sarana): 0.04
          */
         $w = [
             // Profil Pendaki (Total: 0.61)
             'C1'  => 0.07,   // Usia
             'C2'  => 0.10,   // Kondisi Fisik (HIGHEST)
             'C3'  => 0.07,   // Riwayat Penyakit
-            'C5'  => 0.05,   // Kepemilikan Peralatan
-            'C7'  => 0.03,   // Motivasi Pendakian
-            'C8'  => 0.09,   // Pengalaman Pendakian (HIGH)
-            'C9'  => 0.05,   // Perencanaan Logistik
-            'C10' => 0.05,   // Keterampilan Alat
-            'C11' => 0.06,   // Kemampuan Survival
-            'C12' => 0.04,   // Kesiapan Tim
-            'C13' => 0.03,   // Kehadiran Pemandu
+            'C4'  => 0.05,   // Kepemilikan Peralatan
+            'C5'  => 0.03,   // Motivasi Pendakian
+            'C6'  => 0.09,   // Pengalaman Pendakian (HIGH)
+            'C7'  => 0.05,   // Perencanaan Logistik
+            'C8'  => 0.05,   // Keterampilan Alat
+            'C9'  => 0.06,   // Kemampuan Survival
+            'C10' => 0.04,   // Kesiapan Tim
+            'C11' => 0.03,   // Kehadiran Pemandu
 
             // Karakteristik Jalur (Total: 0.39)
-            'C15' => 0.04,   // Ketinggian Gunung
-            'C16' => 0.06,   // Elevasi Jalur
-            'C17' => 0.04,   // Tutupan Lahan
-            'C18' => 0.06,   // Panjang Jalur
-            'C19' => 0.08,   // Kecuraman (HIGH - faktor difficulty utama)
-            'C20' => 0.04,   // Sumber Air
-            'C21' => 0.04,   // Sarana Pendukung
+            'C12' => 0.04,   // Ketinggian Gunung
+            'C13' => 0.06,   // Elevasi Jalur
+            'C14' => 0.04,   // Tutupan Lahan
+            'C15' => 0.06,   // Panjang Jalur
+            'C16' => 0.08,   // Kecuraman (HIGH - faktor difficulty utama)
+            'C17' => 0.04,   // Sumber Air
+            'C18' => 0.04,   // Sarana Pendukung
         ];
         // Total: 1.00 (verified)
 

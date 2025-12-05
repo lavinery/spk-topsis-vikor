@@ -184,10 +184,10 @@
                                 {{ $weight->version }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button wire:click="edit({{ $weight->id }})" 
+                                <button wire:click="edit({{ $weight->id }})"
                                         class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
-                                <button wire:click="delete({{ $weight->id }})" 
-                                        onclick="return confirm('Yakin hapus bobot ini?')"
+                                <button wire:click="delete({{ $weight->id }})"
+                                        onclick="return confirm('Yakin ingin menghapus bobot untuk kriteria {{ $weight->criterion->code ?? '' }} - {{ $weight->criterion->name ?? '' }}?')"
                                         class="text-red-600 hover:text-red-900">Hapus</button>
                             </td>
                         </tr>

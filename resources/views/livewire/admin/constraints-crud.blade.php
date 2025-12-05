@@ -182,7 +182,7 @@
                                     <button wire:click="edit({{ $c->id }})" class="px-3 py-1.5 rounded-lg bg-brand text-white text-xs hover:bg-indigo-700 transition-colors">
                                         Edit
                                     </button>
-                                    <button wire:click="delete({{ $c->id }})" onclick="return confirm('Yakin ingin menghapus constraint {{ $c->name }}?')" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs hover:bg-red-100 transition-colors">
+                                    <button wire:click="delete({{ $c->id }})" onclick="return confirm('Yakin ingin menghapus constraint \'{{ $c->name }}\'?\n\nTipe: {{ ucfirst($c->type) }}\nKriteria: {{ $c->criterion_code }}\nOperator: {{ $c->operator }}\nNilai: {{ $c->value }}\n\nProses ini tidak dapat dibatalkan!')" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs hover:bg-red-100 transition-colors">
                                         Hapus
                                     </button>
                                 </div>

@@ -15,6 +15,19 @@
             </button>
         </div>
 
+        <!-- Error Message -->
+        @if(isset($error))
+            <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+                <div class="flex items-center gap-2 text-red-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="font-medium">Error:</span>
+                    <span>{{ $error }}</span>
+                </div>
+            </div>
+        @endif
+
         <!-- Filters -->
         <div class="bg-white rounded-xl border border-neutral-line shadow-sm p-4 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -12,7 +12,7 @@ return [
     */
 
     'pure_formula' => true,                 // Enable pure formula mode
-    'strict_missing' => true,               // Missing data → exclude alternative
+    'strict_missing' => false,              // Missing data → use median imputation (no exclusion)
     'pure_sources' => ['MOUNTAIN', 'ROUTE'], // Only per-alternative criteria
     
     

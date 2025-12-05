@@ -20,10 +20,9 @@ final class TopsisService
                 // status
                 $a->update(['status' => 'running']);
 
-                // 0) Ambil daftar alternatif (exclude yang di-flag)
+                // 0) Ambil daftar alternatif
                 $alts = $a->alternatives()
                     ->with(['route.mountain'])
-                    ->where('is_excluded', false)
                     ->get();
 
                 if ($alts->isEmpty()) {
@@ -187,27 +186,27 @@ final class TopsisService
         return [$rows, $X, $meta];
     }
 
-    /** Ambil nilai dari Mountain utk C15 (elevation mdpl) dst */
+    /** Ambil nilai dari Mountain utk C12 (elevation mdpl) dst */
     private function valueFromMountain(string $code, $mountain): ?float
     {
         if (!$mountain) return null;
         return match ($code) {
-            'C15' => is_numeric($mountain->elevation_m) ? (float)$mountain->elevation_m : null,
+            'C12' => is_numeric($mountain->elevation_m) ? (float)$mountain->elevation_m : null,
             default => null,
         };
     }
 
-    /** Ambil nilai dari Route utk C16..C21 (termasuk kategori C17) */
+    /** Ambil nilai dari Route utk C13..C18 (termasuk kategori C14) */
     private function valueFromRoute(string $code, $route): ?float
     {
         if (!$route) return null;
         return match ($code) {
-            'C16' => $this->normalizeRouteValue($route->elevation_gain_m, 'C16'),
-            'C17' => $this->mapLandCoverKey(17, $route->land_cover_key), // 0..1 cost-score dari category_maps
-            'C18' => $this->normalizeRouteValue($route->distance_km, 'C18'),
-            'C19' => $this->normalizeRouteValue($route->slope_class ?? $route->slope_deg, 'C19'),
-            'C20' => $this->normalizeRouteValue($route->water_sources_score, 'C20'),
-            'C21' => $this->normalizeRouteValue($route->support_facility_score, 'C21'),
+            'C13' => $this->normalizeRouteValue($route->elevation_gain_m, 'C13'),
+            'C14' => $this->mapLandCoverKey(14, $route->land_cover_key), // 0..1 cost-score dari category_maps
+            'C15' => $this->normalizeRouteValue($route->distance_km, 'C15'),
+            'C16' => $this->normalizeRouteValue($route->slope_class ?? $route->slope_deg, 'C16'),
+            'C17' => $this->normalizeRouteValue($route->water_sources_score, 'C17'),
+            'C18' => $this->normalizeRouteValue($route->support_facility_score, 'C18'),
             default => null,
         };
     }
@@ -220,11 +219,11 @@ final class TopsisService
 
         // Range global untuk normalisasi min-max
         $ranges = [
-            'C16' => [200, 2200],    // elevation_gain_m
-            'C18' => [4.2, 16.2],    // distance_km
-            'C19' => [1, 5],         // slope_class
-            'C20' => [4, 8],         // water_sources_score
-            'C21' => [3, 9],         // support_facility_score
+            'C13' => [200, 2200],    // elevation_gain_m
+            'C15' => [4.2, 16.2],    // distance_km
+            'C16' => [1, 5],         // slope_class
+            'C17' => [4, 8],         // water_sources_score
+            'C18' => [3, 9],         // support_facility_score
         ];
 
         if (!isset($ranges[$code])) return (float)$value;
@@ -436,11 +435,11 @@ final class TopsisService
     {
         // ambil indeks kolom rute yang dibutuhkan
         $idx = array_flip($cols);
-        $jGain   = $idx['C16'] ?? null;
-        $jDist   = $idx['C18'] ?? null;
-        $jLand   = $idx['C17'] ?? null; // sudah 0..1 cost score
-        $jSlope  = $idx['C19'] ?? null;
-        $jSup    = $idx['C21'] ?? null;
+        $jGain   = $idx['C13'] ?? null;
+        $jDist   = $idx['C15'] ?? null;
+        $jLand   = $idx['C14'] ?? null; // sudah 0..1 cost score
+        $jSlope  = $idx['C16'] ?? null;
+        $jSup    = $idx['C18'] ?? null;
 
         // nilai user (0..1)
         $ans = $a->answers()->with('criterion')->get()->keyBy(fn($x) => $x->criterion->code);
@@ -554,15 +553,15 @@ final class TopsisService
                         }
                     }
                 } elseif ($c->source === 'MOUNTAIN') {
-                    $val = is_numeric($m?->elevation_m) ? (float)$m->elevation_m : null; // C15
+                    $val = is_numeric($m?->elevation_m) ? (float)$m->elevation_m : null; // C12
                 } else { // ROUTE - Apply normalization to ensure consistent scale
                     $val = match ($c->code) {
-                        'C16' => $this->normalizeRouteValue($r->elevation_gain_m, 'C16'),
-                        'C17' => $this->mapLandCoverKey($c->id, $r->land_cover_key),
-                        'C18' => $this->normalizeRouteValue($r->distance_km, 'C18'),
-                        'C19' => $this->normalizeRouteValue($r->slope_class ?? $r->slope_deg, 'C19'),
-                        'C20' => $this->normalizeRouteValue($r->water_sources_score, 'C20'),
-                        'C21' => $this->normalizeRouteValue($r->support_facility_score, 'C21'),
+                        'C13' => $this->normalizeRouteValue($r->elevation_gain_m, 'C13'),
+                        'C14' => $this->mapLandCoverKey($c->id, $r->land_cover_key),
+                        'C15' => $this->normalizeRouteValue($r->distance_km, 'C15'),
+                        'C16' => $this->normalizeRouteValue($r->slope_class ?? $r->slope_deg, 'C16'),
+                        'C17' => $this->normalizeRouteValue($r->water_sources_score, 'C17'),
+                        'C18' => $this->normalizeRouteValue($r->support_facility_score, 'C18'),
                         default => null
                     };
                 }
@@ -685,7 +684,6 @@ final class TopsisService
             // Get alternatives
             $alts = $a->alternatives()
                 ->with(['route.mountain'])
-                ->where('is_excluded', false)
                 ->get();
 
             if ($alts->isEmpty()) {

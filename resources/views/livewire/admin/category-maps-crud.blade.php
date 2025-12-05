@@ -80,8 +80,8 @@
                         <td class="px-4 py-2">{{ $r->label ?? '-' }}</td>
                         <td class="px-4 py-2">
                             <button wire:click="edit({{ $r->id }})" class="px-3 py-1.5 rounded bg-gray-100 text-xs hover:bg-gray-200">Edit</button>
-                            <button wire:click="delete({{ $r->id }})" class="px-3 py-1.5 rounded bg-white text-neutral-text text-xs hover:bg-rose-100" 
-                                    onclick="return confirm('Yakin hapus?')">Hapus</button>
+                            <button wire:click="delete({{ $r->id }})" class="px-3 py-1.5 rounded bg-red-50 text-red-700 text-xs hover:bg-red-100"
+                                    onclick="return confirm('Yakin ingin menghapus category map \'{{ $r->key }}\' dengan skor {{ $r->score }}?')">Hapus</button>
                         </td>
                     </tr>
                 @endforeach

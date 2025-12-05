@@ -57,25 +57,64 @@ class AnswerNormalizer
 
                 $num = $fuzzyResult['defuzzified_value'];
             } else {
-                // Use legacy transforms for non-fuzzy criteria
-                $num = match($c->code) {
-                    'C2','C4','C5','C6','C9','C10','C11','C12','C14'
-                         => UserTransforms::ord1_5((int)$val),                    // benefit 0..1
-                    'C7' => UserTransforms::motivation($this->maps->getScore($c->id, (string)$val)), // benefit
-                    'C8' => UserTransforms::experience((int)$val),                // benefit 0..1
-                    'C13'=> UserTransforms::guide((bool)$val),                    // benefit 0..1
-                    default => is_numeric($val) ? (float)$val : null
-                };
-
-                // Generic boolean support
-                if ($num === null && ($c->data_type ?? '') === 'boolean') {
-                    $num = filter_var($val, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-                    $num = is_null($num) ? null : ($num ? 1.0 : 0.0);
-                }
+                // Dynamic transformation based on criterion metadata (no hardcoded codes!)
+                $num = $this->transformValue($c, $val);
             }
 
             $ans->value_numeric = $num;
             $ans->save();
         }
+    }
+
+    /**
+     * Transform value dynamically based on criterion metadata
+     * NO HARDCODED CRITERION CODES - fully flexible for CRUD operations
+     */
+    private function transformValue(Criterion $criterion, $value): ?float
+    {
+        // Handle null/empty values
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        // 1. BOOLEAN type - convert to 0/1
+        if ($criterion->data_type === 'boolean') {
+            $bool = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            return is_null($bool) ? null : ($bool ? 1.0 : 0.0);
+        }
+
+        // 2. CATEGORICAL type - use category_maps
+        if ($criterion->data_type === 'categorical' || $criterion->scale === 'categorical') {
+            $score = $this->maps->getScore($criterion->id, (string)$value);
+            return is_numeric($score) ? (float)$score : null;
+        }
+
+        // 3. ORDINAL type - normalize to 0..1 scale
+        if ($criterion->data_type === 'ordinal') {
+            if (!is_numeric($value)) {
+                return null;
+            }
+            return UserTransforms::ord1_5((int)$value);
+        }
+
+        // 4. NUMERIC type - use as-is or normalize based on hints
+        if ($criterion->data_type === 'numeric' && is_numeric($value)) {
+            $numValue = (float)$value;
+
+            // If min_hint and max_hint are defined, normalize to 0..1
+            if ($criterion->min_hint !== null && $criterion->max_hint !== null) {
+                $min = (float)$criterion->min_hint;
+                $max = (float)$criterion->max_hint;
+                if ($max > $min) {
+                    return max(0, min(1, ($numValue - $min) / ($max - $min)));
+                }
+            }
+
+            // Otherwise use as-is
+            return $numValue;
+        }
+
+        // Fallback: try to parse as number
+        return is_numeric($value) ? (float)$value : null;
     }
 }

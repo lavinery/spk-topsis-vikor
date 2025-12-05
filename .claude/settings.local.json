@@ -44,7 +44,10 @@
       "Bash(php -r:*)",
       "Bash(php check-steps-columns.php:*)",
       "Bash(php debug-assessment.php:*)",
-      "Bash(php check-all-criteria.php:*)"
+      "Bash(php check-all-criteria.php:*)",
+      "Bash(php:*)",
+      "Bash(composer show:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

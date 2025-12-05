@@ -226,7 +226,7 @@
                                     <button wire:click="edit({{ $c->id }})" class="px-3 py-1.5 rounded-lg bg-brand text-white text-xs hover:bg-indigo-700 transition-colors">
                                         Edit
                                     </button>
-                                    <button wire:click="delete({{ $c->id }})" onclick="return confirm('Yakin ingin menghapus kriteria {{ $c->code }}?')" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs hover:bg-red-100 transition-colors">
+                                    <button wire:click="delete({{ $c->id }})" onclick="return confirm('Yakin ingin menghapus kriteria {{ $c->code }} - {{ $c->name }}?\n\n⚠️ PERINGATAN:\nData terkait yang akan terhapus:\n- Bobot kriteria\n- Fuzzy terms (jika ada)\n- Category maps (jika ada)\n- Jawaban assessment terkait\n\nProses ini tidak dapat dibatalkan!')" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs hover:bg-red-100 transition-colors">
                                         Hapus
                                     </button>
                                 </div>

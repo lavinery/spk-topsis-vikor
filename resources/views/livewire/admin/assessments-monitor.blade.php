@@ -65,7 +65,7 @@
                                 <a href="{{ route('assess.steps', $row['a']->id) }}" class="px-3 py-1.5 rounded-lg bg-gray-100 text-xs hover:bg-gray-200">Tahapan</a>
                                 <button
                                     wire:click="delete({{ $row['a']->id }})"
-                                    onclick="return confirm('Apakah Anda yakin ingin menghapus assessment ini?')"
+                                    onclick="return confirm('Yakin ingin menghapus assessment \'{{ $row['a']->title }}\' beserta semua data terkait?\n\nData yang akan terhapus:\n- Hasil perhitungan TOPSIS\n- Jawaban kriteria\n- Alternatif yang dipilih\n\nProses ini tidak dapat dibatalkan!')"
                                     class="px-3 py-1.5 rounded-lg bg-red-100 text-red-700 text-xs hover:bg-red-200"
                                 >
                                     Hapus

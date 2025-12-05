@@ -208,7 +208,7 @@
                                     </button>
                                     <button
                                         wire:click="delete({{ $m->id }})"
-                                        onclick="return confirm('Yakin ingin menghapus {{ $m->name }}?')"
+                                        onclick="return confirm('Yakin ingin menghapus gunung \'{{ $m->name }}\'?\n\n⚠️ PERINGATAN:\nSemua jalur pendakian di gunung ini juga akan terhapus!\n\nProses ini tidak dapat dibatalkan!')"
                                         class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs hover:bg-red-100 transition-colors"
                                     >
                                         Hapus

@@ -133,15 +133,6 @@ class UserWizard extends Component
                 $this->addError('answers.' . $c['id'], 'Nilai harus berupa angka');
                 return false;
             }
-            // Check min/max hints if available
-            if ($c['min_hint'] && (float)$val < (float)$c['min_hint']) {
-                $this->addError('answers.' . $c['id'], "Nilai minimal: {$c['min_hint']}");
-                return false;
-            }
-            if ($c['max_hint'] && (float)$val > (float)$c['max_hint']) {
-                $this->addError('answers.' . $c['id'], "Nilai maksimal: {$c['max_hint']}");
-                return false;
-            }
         }
         
         if ($c['scale'] === 'categorical' && empty($val)) {

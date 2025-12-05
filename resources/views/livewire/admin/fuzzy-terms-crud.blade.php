@@ -75,8 +75,8 @@
                         <td class="px-4 py-2">{{ $r->shape }}</td>
                         <td class="px-4 py-2 font-mono">{{ is_array($r->params_json) ? json_encode($r->params_json) : $r->params_json }}</td>
                         <td class="px-4 py-2">
-                            <button wire:click="edit({{ $r->id }})" class="px-3 py-1.5 rounded bg-gray-100 text-xs">Edit</button>
-                            <button wire:click="delete({{ $r->id }})" class="px-3 py-1.5 rounded bg-white text-neutral-text text-xs">Hapus</button>
+                            <button wire:click="edit({{ $r->id }})" class="px-3 py-1.5 rounded bg-gray-100 text-xs hover:bg-gray-200">Edit</button>
+                            <button wire:click="delete({{ $r->id }})" onclick="return confirm('Yakin ingin menghapus fuzzy term \'{{ $r->term }}\' untuk kriteria ini?')" class="px-3 py-1.5 rounded bg-red-50 text-red-700 text-xs hover:bg-red-100">Hapus</button>
                         </td>
                     </tr>
                 @endforeach

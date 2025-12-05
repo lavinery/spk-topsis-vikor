@@ -25,8 +25,7 @@ class LandingController extends Controller
         $userCriteria = Criterion::where('source', 'USER')->orderByRaw("CAST(SUBSTRING(code,2) AS UNSIGNED)")->get();
 
         // Get all mountains for selection with their routes
-        $mountains = \App\Models\Mountain::where('status', '!=', 'closed')
-            ->with(['routes' => function ($query) {
+        $mountains = \App\Models\Mountain::with(['routes' => function ($query) {
                 $query->select('id', 'mountain_id', 'name', 'distance_km', 'elevation_gain_m', 'slope_class');
             }])
             ->orderBy('name')
@@ -135,9 +134,8 @@ class LandingController extends Controller
             return redirect()->route('landing')->with('error', 'Silakan pilih minimal satu gunung untuk memulai assessment.');
         }
 
-        // Validasi gunung exists dan tidak closed
+        // Validasi gunung exists
         $mountains = \App\Models\Mountain::whereIn('id', $mountainIds)
-            ->where('status', '!=', 'closed')
             ->get();
 
         if ($mountains->isEmpty()) {
@@ -159,12 +157,15 @@ class LandingController extends Controller
             'pure_formula' => false, // Include ALL criteria (USER + MOUNTAIN/ROUTE)
         ]);
 
-        // 2) simpan jawaban C1..C14 (value_raw)
-        $crit = Criterion::where('source', 'USER')->pluck('id', 'code');
-        foreach ($crit as $code => $cid) {
-            $val = $r->input($code);
-            if ($code === 'C13') $val = $r->boolean('C13') ? '1' : '0';
-            AssessmentAnswer::create(['assessment_id' => $a->id, 'criterion_id' => $cid, 'value_raw' => (string)($val ?? '')]);
+        // 2) simpan jawaban USER criteria (value_raw)
+        $crit = Criterion::where('source', 'USER')->get();
+        foreach ($crit as $c) {
+            $val = $r->input($c->code);
+            // Handle boolean type criteria dynamically
+            if ($c->data_type === 'boolean') {
+                $val = $r->boolean($c->code) ? '1' : '0';
+            }
+            AssessmentAnswer::create(['assessment_id' => $a->id, 'criterion_id' => $c->id, 'value_raw' => (string)($val ?? '')]);
         }
         // 3) normalize
         $normalizer = app('App\Services\AnswerNormalizer');
@@ -172,7 +173,7 @@ class LandingController extends Controller
 
         // 4) pilih alternatif dari semua gunung yang dipilih
         $q = RouteModel::with('mountain')
-            ->whereHas('mountain', fn($x) => $x->whereIn('id', $mountainIds)->where('status', '!=', 'closed'));
+            ->whereHas('mountain', fn($x) => $x->whereIn('id', $mountainIds));
 
         $routeIds = $q->pluck('id')->toArray();
 
@@ -198,8 +199,7 @@ class LandingController extends Controller
     public function getMountainsList()
     {
         try {
-            $mountains = \App\Models\Mountain::where('status', '!=', 'closed')
-                ->with(['routes' => function ($query) {
+            $mountains = \App\Models\Mountain::with(['routes' => function ($query) {
                     $query->select('id', 'mountain_id', 'name', 'distance_km', 'elevation_gain_m');
                 }])
                 ->select('id', 'name', 'province', 'elevation_m')
@@ -313,14 +313,17 @@ class LandingController extends Controller
                 'pure_formula' => $r->boolean('pure_formula', false),
             ]);
 
-            // 2) Save user answers C1..C14 (with default values if not provided)
-            $crit = \App\Models\Criterion::where('source', 'USER')->pluck('id', 'code');
-            foreach ($crit as $code => $cid) {
-                $val = $r->input($code, 3); // default to 3 (medium)
-                if ($code === 'C13') $val = $r->boolean('C13') ? '1' : '0';
+            // 2) Save user answers (with default values if not provided)
+            $crit = \App\Models\Criterion::where('source', 'USER')->get();
+            foreach ($crit as $c) {
+                $val = $r->input($c->code, 3); // default to 3 (medium)
+                // Handle boolean type criteria dynamically
+                if ($c->data_type === 'boolean') {
+                    $val = $r->boolean($c->code) ? '1' : '0';
+                }
                 AssessmentAnswer::create([
                     'assessment_id' => $a->id,
-                    'criterion_id' => $cid,
+                    'criterion_id' => $c->id,
                     'value_raw' => (string)($val ?? '')
                 ]);
             }
@@ -330,7 +333,7 @@ class LandingController extends Controller
             $normalizer->normalize($a);
 
             // 4) Select alternatives based on specific mountain(s)
-            $q = RouteModel::with('mountain')->whereHas('mountain', fn($x) => $x->where('status', '!=', 'closed'));
+            $q = RouteModel::with('mountain');
 
             // Focus on specific mountain if provided
             if ($mountainId) {
