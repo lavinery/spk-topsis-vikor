@@ -15,6 +15,7 @@ class FuzzyTermsCrud extends Component
     public $code, $label, $shape = 'triangular', $params_json;
     public $editingId = null;
     public $q = '';
+    public $importFile;
 
     protected $rules = [
         'criterion_id' => 'required|exists:criteria,id',
@@ -23,6 +24,12 @@ class FuzzyTermsCrud extends Component
         'shape' => 'required|in:triangular,trapezoidal',
         'params_json' => 'required|string',
     ];
+
+    public function create()
+    {
+        $this->resetForm();
+        $this->dispatch('open-form-modal');
+    }
 
     public function edit($id)
     {
@@ -33,6 +40,7 @@ class FuzzyTermsCrud extends Component
         $this->label = $r->label;
         $this->shape = $r->shape;
         $this->params_json = is_array($r->params_json) ? json_encode($r->params_json) : $r->params_json;
+        $this->dispatch('open-form-modal');
     }
 
     public function resetForm()
@@ -60,13 +68,14 @@ class FuzzyTermsCrud extends Component
             FuzzyTerm::create($data);
         }
         $this->resetForm();
-        session()->flash('ok', 'Saved');
+        $this->dispatch('close-form-modal');
+        session()->flash('ok', 'Data fuzzy term berhasil disimpan!');
     }
 
     public function delete($id)
     {
         FuzzyTerm::findOrFail($id)->delete();
-        session()->flash('ok', 'Deleted');
+        session()->flash('ok', 'Data fuzzy term berhasil dihapus!');
     }
 
     public function render()

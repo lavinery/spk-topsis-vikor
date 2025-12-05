@@ -15,6 +15,7 @@ class CriteriaCrud extends Component
     public $code, $name, $source = 'ROUTE', $type = 'benefit', $active = true, $sort_order = 0, $unit, $scale = 'numeric', $min_hint, $max_hint;
     public $data_type = 'numeric';
     public $is_fuzzy = false;
+    public $importFile;
 
     protected $rules = [
         'code' => 'required|regex:/^C\d+$/|max:10',
@@ -31,11 +32,18 @@ class CriteriaCrud extends Component
         'max_hint' => 'nullable|numeric',
     ];
 
+    public function create()
+    {
+        $this->resetForm();
+        $this->dispatch('open-form-modal');
+    }
+
     public function edit($id)
     {
         $this->editingId = $id;
         $criterion = Criterion::findOrFail($id);
         $this->fill($criterion->toArray());
+        $this->dispatch('open-form-modal');
     }
 
     public function resetForm()
@@ -55,21 +63,22 @@ class CriteriaCrud extends Component
     public function save()
     {
         $data = $this->validate();
-        
+
         if ($this->editingId) {
             Criterion::findOrFail($this->editingId)->update($data);
         } else {
             Criterion::create($data);
         }
-        
+
         $this->resetForm();
-        session()->flash('ok', 'Saved');
+        $this->dispatch('close-form-modal');
+        session()->flash('ok', 'Data kriteria berhasil disimpan!');
     }
 
     public function delete($id)
     {
         Criterion::findOrFail($id)->delete();
-        session()->flash('ok', 'Deleted');
+        session()->flash('ok', 'Data kriteria berhasil dihapus!');
     }
 
     public function up($id)

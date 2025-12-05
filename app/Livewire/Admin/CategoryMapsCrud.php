@@ -17,6 +17,7 @@ class CategoryMapsCrud extends Component
     public $label;
     public $q = '';
     public $editingId = null;
+    public $importFile;
 
     protected $rules = [
         'criterion_id' => 'required|exists:criteria,id',
@@ -25,11 +26,18 @@ class CategoryMapsCrud extends Component
         'label' => 'nullable|string|max:120',
     ];
 
+    public function create()
+    {
+        $this->resetForm();
+        $this->dispatch('open-form-modal');
+    }
+
     public function edit($id)
     {
         $this->editingId = $id;
         $categoryMap = CategoryMap::findOrFail($id);
         $this->fill($categoryMap->toArray());
+        $this->dispatch('open-form-modal');
     }
 
     public function resetForm()
@@ -43,21 +51,22 @@ class CategoryMapsCrud extends Component
     public function save()
     {
         $data = $this->validate();
-        
+
         if ($this->editingId) {
             CategoryMap::findOrFail($this->editingId)->update($data);
         } else {
             CategoryMap::create($data);
         }
-        
+
         $this->resetForm();
-        session()->flash('ok', 'Saved');
+        $this->dispatch('close-form-modal');
+        session()->flash('ok', 'Data pemetaan kategori berhasil disimpan!');
     }
 
     public function delete($id)
     {
         CategoryMap::findOrFail($id)->delete();
-        session()->flash('ok', 'Deleted');
+        session()->flash('ok', 'Data pemetaan kategori berhasil dihapus!');
     }
 
     public function render()

@@ -86,7 +86,7 @@
             <div class="max-w-7xl mx-auto py-10 px-4">
                 <div class="text-center">
                     <div class="flex justify-center items-center gap-4 mb-6">
-                        <div class="w-12 h-12 bg-brand rounded-2xl flex items-center justify-center text-2xl text-neutral-text">
+                        <div class="w-12 h-12 bg-brand rounded-2xl flex items-center justify-center text-2xl text-white">
                             🏔️
                         </div>
                         <div>

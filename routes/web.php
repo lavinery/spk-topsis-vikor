@@ -108,7 +108,13 @@ Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(func
     Route::get('/fuzzy-terms', \App\Livewire\Admin\FuzzyTermsCrud::class)->name('fuzzy-terms');
 
     // Import functionality
+    Route::post('/mountains/import', [\App\Http\Controllers\Admin\ImportController::class,'mountains'])->name('mountains.import');
     Route::post('/routes/import', [\App\Http\Controllers\Admin\ImportController::class,'routes'])->name('routes.import');
+    Route::post('/criteria/import', [\App\Http\Controllers\Admin\ImportController::class,'criteria'])->name('criteria.import');
+    Route::post('/criterion-weights/import', [\App\Http\Controllers\Admin\ImportController::class,'criterionWeights'])->name('criterion-weights.import');
+    Route::post('/category-maps/import', [\App\Http\Controllers\Admin\ImportController::class,'categoryMaps'])->name('category-maps.import');
+    Route::post('/fuzzy-terms/import', [\App\Http\Controllers\Admin\ImportController::class,'fuzzyTerms'])->name('fuzzy-terms.import');
+    Route::post('/constraints/import', [\App\Http\Controllers\Admin\ImportController::class,'constraints'])->name('constraints.import');
 
     // Monitoring assessments
     Route::get('/assessments', \App\Livewire\Admin\AssessmentsMonitor::class)->name('assessments');

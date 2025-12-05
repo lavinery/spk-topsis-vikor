@@ -5,18 +5,18 @@
         <x-back-button href="{{ route('assess.result', $assessmentId) }}" text="Kembali ke Hasil" />
     </div>
     
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-neutral-text">Tahapan Perhitungan</h1>
             <p class="text-sm text-neutral-sub">Assessment #{{ $assessmentId }} — Method: <span class="font-semibold">{{ strtoupper($activeMethod) }}</span> — Step: <span class="font-semibold">{{ $activeStep }}</span></p>
         </div>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
             <a href="{{ route('assess.export', [$assessmentId, $activeStep, 'csv']) }}"
-               class="px-3 py-1.5 rounded-lg border border-neutral-line text-sm text-neutral-text hover:bg-white transition-colors">Export CSV</a>
+               class="px-3 py-1.5 rounded-lg border border-neutral-line text-sm text-neutral-text hover:bg-white transition-colors">Ekspor CSV</a>
             <a href="{{ route('assess.export', [$assessmentId, $activeStep, 'xlsx']) }}"
-               class="px-3 py-1.5 rounded-lg border border-neutral-line text-sm text-neutral-text hover:bg-white transition-colors">Export XLSX</a>
+               class="px-3 py-1.5 rounded-lg border border-neutral-line text-sm text-neutral-text hover:bg-white transition-colors">Ekspor XLSX</a>
             <a href="{{ route('assess.export', [$assessmentId, $activeStep, 'pdf']) }}"
-               class="px-3 py-1.5 rounded-lg border border-neutral-line text-sm text-neutral-text hover:bg-white transition-colors">Export PDF</a>
+               class="px-3 py-1.5 rounded-lg border border-neutral-line text-sm text-neutral-text hover:bg-white transition-colors">Ekspor PDF</a>
         </div>
     </div>
 
@@ -35,7 +35,7 @@
         <div class="inline-flex border border-neutral-line rounded-xl bg-white shadow-soft">
             @foreach ($topsisSteps as $s)
                 <button wire:click="loadStep('{{ $s }}')"
-                    class="px-3 py-2 text-sm border-r border-neutral-line last:border-r-0 {{ $activeStep===$s ? 'bg-brand text-neutral-text' : 'text-neutral-sub hover:bg-white' }}">
+                    class="px-3 py-2 text-sm border-r border-neutral-line last:border-r-0 {{ $activeStep===$s ? 'bg-brand text-white' : 'text-neutral-sub hover:bg-white' }}">
                     {{ $s }}
                 </button>
             @endforeach
@@ -56,8 +56,8 @@
                        class="px-4 py-2 rounded-lg border border-neutral-line text-sm text-neutral-text hover:bg-white transition-colors">
                         📝 Edit Kuesioner
                     </a>
-                    <a href="{{ route('assess.result', $assessmentId) }}" 
-                       class="px-4 py-2 rounded-lg bg-brand text-neutral-text hover:bg-indigo-700 transition-colors">
+                    <a href="{{ route('assess.result', $assessmentId) }}"
+                       class="px-4 py-2 rounded-lg bg-brand text-white hover:bg-indigo-700 transition-colors">
                         🚀 Jalankan Perhitungan
                     </a>
                 </div>

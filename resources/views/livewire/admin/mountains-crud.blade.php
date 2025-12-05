@@ -1,147 +1,44 @@
 {{-- resources/views/livewire/admin/mountains-crud.blade.php --}}
 <div class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Page Header with Back Button -->
+        <!-- Page Header with Action Buttons -->
         <div class="mb-6">
-            <div class="flex items-center gap-3 mb-2">
-                <a href="{{ route('admin.dashboard') }}" class="text-neutral-sub hover:text-neutral-text transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                </a>
-                <h1 class="text-2xl font-bold text-neutral-text">Manajemen Gunung</h1>
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('admin.dashboard') }}" class="text-neutral-sub hover:text-neutral-text transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </a>
+                    <h1 class="text-2xl font-bold text-neutral-text">Manajemen Gunung</h1>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button wire:click="create" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-brand text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Tambah Gunung
+                    </button>
+                    <button @click="$dispatch('open-import-modal')" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors shadow-sm">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        Impor
+                    </button>
+                </div>
             </div>
             <p class="text-sm text-neutral-sub ml-9">Kelola data gunung untuk sistem rekomendasi TOPSIS</p>
         </div>
 
-        <!-- Form Card -->
-        <div class="bg-white rounded-xl border border-neutral-line shadow-sm p-6 mb-6">
-            <h2 class="text-lg font-semibold text-neutral-text mb-4">
-                {{ $editingId ? 'Edit Gunung' : 'Tambah Gunung Baru' }}
-            </h2>
-            <form wire:submit.prevent="save">
-                <div class="grid md:grid-cols-3 gap-4">
-                    <!-- Nama Gunung -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-text mb-2">
-                            Nama Gunung <span class="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            wire:model="name"
-                            placeholder="Contoh: Gunung Semeru"
-                            class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                        >
-                        @error('name') <div class="text-xs text-red-600 mt-1">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- Elevasi -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-text mb-2">
-                            Elevasi (m) <span class="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="number"
-                            wire:model="elevation_m"
-                            placeholder="3676"
-                            class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                        >
-                        @error('elevation_m') <div class="text-xs text-red-600 mt-1">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- Provinsi -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-text mb-2">
-                            Provinsi <span class="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            wire:model="province"
-                            placeholder="Jawa Timur"
-                            class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                        >
-                        @error('province') <div class="text-xs text-red-600 mt-1">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- Latitude -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-text mb-2">
-                            Latitude
-                        </label>
-                        <input
-                            type="number"
-                            step="0.000001"
-                            wire:model="lat"
-                            placeholder="-8.1084"
-                            class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                        >
-                        @error('lat') <div class="text-xs text-red-600 mt-1">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- Longitude -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-text mb-2">
-                            Longitude
-                        </label>
-                        <input
-                            type="number"
-                            step="0.000001"
-                            wire:model="lng"
-                            placeholder="112.9225"
-                            class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                        >
-                        @error('lng') <div class="text-xs text-red-600 mt-1">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- Status -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-text mb-2">
-                            Status <span class="text-red-500">*</span>
-                        </label>
-                        <select
-                            wire:model="status"
-                            class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                        >
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                        @error('status') <div class="text-xs text-red-600 mt-1">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-3 mt-6 pt-6 border-t border-neutral-line">
-                    <button
-                        type="submit"
-                        class="inline-flex items-center px-6 py-2.5 rounded-lg bg-brand text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm"
-                    >
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        {{ $editingId ? 'Update' : 'Simpan' }}
-                    </button>
-
-                    @if ($editingId)
-                        <button
-                            type="button"
-                            wire:click="resetForm"
-                            class="px-6 py-2.5 rounded-lg bg-gray-100 text-neutral-text font-medium hover:bg-gray-200 transition-colors"
-                        >
-                            Batal
-                        </button>
-                    @endif
-
-                    @if (session('ok'))
-                        <div class="flex items-center gap-2 text-sm text-green-700 bg-green-50 px-4 py-2 rounded-lg border border-green-200">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            {{ session('ok') }}
-                        </div>
-                    @endif
-                </div>
-            </form>
-        </div>
+        <!-- Success Message -->
+        @if (session('ok'))
+            <div class="mb-6 flex items-center gap-2 text-sm text-green-700 bg-green-50 px-4 py-3 rounded-lg border border-green-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {{ session('ok') }}
+            </div>
+        @endif
 
         <!-- Search Bar -->
         <div class="bg-white rounded-xl border border-neutral-line shadow-sm p-4 mb-6">
@@ -160,7 +57,8 @@
 
         <!-- Table Card -->
         <div class="bg-white rounded-xl border border-neutral-line shadow-sm overflow-hidden">
-            <table class="min-w-full divide-y divide-neutral-line">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-neutral-line">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
@@ -195,7 +93,7 @@
                                     @if($m->status === 'active') bg-green-100 text-green-700
                                     @else bg-gray-100 text-gray-700
                                     @endif">
-                                    {{ ucfirst($m->status) }}
+                                    {{ $m->status === 'active' ? 'Aktif' : 'Tidak Aktif' }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right text-sm font-medium">
@@ -204,11 +102,14 @@
                                         wire:click="edit({{ $m->id }})"
                                         class="px-3 py-1.5 rounded-lg bg-brand text-white text-xs hover:bg-indigo-700 transition-colors"
                                     >
-                                        Edit
+                                        Ubah
                                     </button>
                                     <button
-                                        wire:click="delete({{ $m->id }})"
-                                        onclick="return confirm('Yakin ingin menghapus gunung \'{{ $m->name }}\'?\n\n⚠️ PERINGATAN:\nSemua jalur pendakian di gunung ini juga akan terhapus!\n\nProses ini tidak dapat dibatalkan!')"
+                                        @click="$dispatch('open-delete-modal', {
+                                            id: {{ $m->id }},
+                                            name: '{{ $m->name }}',
+                                            details: 'Provinsi: {{ $m->province }}\nElevasi: {{ number_format($m->elevation_m) }} m\nStatus: {{ ucfirst($m->status) }}\n\n⚠️ PERINGATAN:\nSemua jalur pendakian di gunung ini juga akan terhapus!\n\nProses ini tidak dapat dibatalkan!'
+                                        })"
                                         class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs hover:bg-red-100 transition-colors"
                                     >
                                         Hapus
@@ -228,6 +129,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
 
             <!-- Pagination -->
             @if($mountains->hasPages())
@@ -237,4 +139,86 @@
             @endif
         </div>
     </div>
+
+    {{-- Form Modal --}}
+    <x-form-modal title="{{ $editingId ? 'Edit Gunung' : 'Tambah Gunung Baru' }}">
+        <form wire:submit.prevent="save">
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-neutral-text mb-2">
+                        Nama Gunung <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" wire:model="name" placeholder="Contoh: Gunung Semeru" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all">
+                    @error('name') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-text mb-2">
+                        Elevasi (m) <span class="text-red-500">*</span>
+                    </label>
+                    <input type="number" wire:model="elevation_m" placeholder="3676" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all">
+                    @error('elevation_m') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-text mb-2">
+                        Provinsi <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" wire:model="province" placeholder="Jawa Timur" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all">
+                    @error('province') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-text mb-2">
+                        Status <span class="text-red-500">*</span>
+                    </label>
+                    <select wire:model="status" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all">
+                        <option value="active">Aktif</option>
+                        <option value="inactive">Tidak Aktif</option>
+                    </select>
+                    @error('status') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-text mb-2">
+                        Latitude
+                    </label>
+                    <input type="number" step="0.000001" wire:model="lat" placeholder="-8.1084" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all">
+                    @error('lat') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-text mb-2">
+                        Longitude
+                    </label>
+                    <input type="number" step="0.000001" wire:model="lng" placeholder="112.9225" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all">
+                    @error('lng') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-neutral-line">
+                <button type="button" @click="$dispatch('close-form-modal')" class="px-5 py-2.5 rounded-lg bg-gray-100 text-neutral-text font-medium hover:bg-gray-200 transition-colors">
+                    Batal
+                </button>
+                <button type="submit" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-brand text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {{ $editingId ? 'Update' : 'Simpan' }}
+                </button>
+            </div>
+        </form>
+    </x-form-modal>
+
+    {{-- Delete Confirmation Modal --}}
+    <x-delete-modal title="Hapus Data Gunung" onConfirm="delete" />
+
+    {{-- Import Modal --}}
+    <x-import-modal
+        title="Impor Data Gunung"
+        route="{{ route('admin.mountains.import') }}"
+        templateFile="templates/mountains_import_template.csv"
+        requiredColumns="name, elevation_m, province, lat, lng, status"
+        description="Upload file Excel atau CSV untuk mengimport banyak data gunung sekaligus"
+    />
 </div>

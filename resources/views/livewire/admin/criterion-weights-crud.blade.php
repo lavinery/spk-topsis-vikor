@@ -10,14 +10,38 @@
                 <h1 class="text-2xl font-bold text-neutral-text">Kelola Bobot Kriteria</h1>
                 <p class="text-sm text-neutral-sub">Atur bobot untuk setiap kriteria dalam perhitungan TOPSIS</p>
             </div>
-            <div class="flex gap-2">
-                <button wire:click="normalizeWeights" 
-                        class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
-                    📊 Normalisasi Bobot
+            <div class="flex items-center gap-3">
+                <button wire:click="create" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-brand text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Tambah Bobot
+                </button>
+                <button @click="$dispatch('open-import-modal')" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors shadow-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Impor
+                </button>
+                <button wire:click="normalizeWeights" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors shadow-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    Normalisasi Bobot
                 </button>
             </div>
         </div>
     </div>
+
+    <!-- Success Message -->
+    @if (session('ok'))
+        <div class="mb-6 flex items-center gap-2 text-sm text-green-700 bg-green-50 px-4 py-3 rounded-lg border border-green-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {{ session('ok') }}
+        </div>
+    @endif
 
     <!-- Search -->
     <div class="mb-4">
@@ -81,71 +105,6 @@
         </div>
     </div>
 
-    <!-- Form -->
-    <div class="bg-white rounded-xl border border-neutral-line p-6 mb-6">
-        <h3 class="text-lg font-semibold text-neutral-text mb-4">
-            {{ $editingId ? 'Edit Bobot Kriteria' : 'Tambah Bobot Kriteria' }}
-        </h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-neutral-text mb-2">Kriteria</label>
-                <select wire:model="criterion_id" class="w-full px-3 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent">
-                    <option value="">Pilih Kriteria</option>
-                    @foreach($criteria as $criterion)
-                        <option value="{{ $criterion->id }}">{{ $criterion->code }} - {{ $criterion->name }}</option>
-                    @endforeach
-                </select>
-                @error('criterion_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-neutral-text mb-2">
-                    Bobot (0-1)
-                    @if($remainingWeight > 0 && !$editingId)
-                        <span class="text-green-600 text-xs font-normal">
-                            • Sisa: {{ number_format($remainingWeight, 4) }}
-                        </span>
-                    @endif
-                </label>
-                <input type="number" wire:model.live="weight" step="0.001" min="0" max="{{ $editingId ? 1 : $remainingWeight }}"
-                       class="w-full px-3 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
-                       placeholder="Masukkan bobot (contoh: 0.05)">
-                @error('weight') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-
-                @if($weight && $remainingWeight < $weight && !$editingId)
-                    <div class="mt-1 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
-                        ⚠️ Bobot yang dimasukkan ({{ $weight }}) melebihi sisa yang tersedia ({{ number_format($remainingWeight, 4) }})
-                    </div>
-                @endif
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-neutral-text mb-2">Versi</label>
-                <input type="text" wire:model="version" 
-                       class="w-full px-3 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent">
-                @error('version') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-            </div>
-        </div>
-        
-        <div class="flex gap-2 mt-4">
-            <button wire:click="save"
-                    @if(!$editingId && $weight > $remainingWeight) disabled @endif
-                    class="px-4 py-2 bg-brand text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
-                {{ $editingId ? 'Update' : 'Simpan' }}
-            </button>
-            <button wire:click="resetForm"
-                    class="px-4 py-2 border border-neutral-line text-neutral-text rounded-lg hover:bg-gray-50 transition-colors">
-                Reset
-            </button>
-            @if(!$editingId && $remainingWeight <= 0)
-                <span class="px-4 py-2 text-sm text-orange-600 bg-orange-50 border border-orange-200 rounded-lg">
-                    ⚠️ Total bobot sudah mencapai 1.0. Gunakan "Normalisasi Bobot" untuk menyesuaikan.
-                </span>
-            @endif
-        </div>
-    </div>
-
     <!-- Table -->
     <div class="bg-white rounded-xl border border-neutral-line overflow-hidden">
         <div class="overflow-x-auto">
@@ -184,11 +143,20 @@
                                 {{ $weight->version }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button wire:click="edit({{ $weight->id }})"
-                                        class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
-                                <button wire:click="delete({{ $weight->id }})"
-                                        onclick="return confirm('Yakin ingin menghapus bobot untuk kriteria {{ $weight->criterion->code ?? '' }} - {{ $weight->criterion->name ?? '' }}?')"
-                                        class="text-red-600 hover:text-red-900">Hapus</button>
+                                <div class="flex gap-2">
+                                    <button wire:click="edit({{ $weight->id }})" class="px-3 py-1.5 rounded-lg bg-brand text-white text-xs hover:bg-indigo-700 transition-colors">
+                                        Ubah
+                                    </button>
+                                    <button
+                                        @click="$dispatch('open-delete-modal', {
+                                            id: {{ $weight->id }},
+                                            name: '{{ $weight->criterion->code }} - {{ $weight->criterion->name }}',
+                                            details: 'Sumber: {{ $weight->criterion->source }}\nBobot: {{ number_format($weight->weight, 4) }}\nPersentase: {{ number_format(($weight->weight / max($totalWeight, 0.001)) * 100, 1) }}%\nVersi: {{ $weight->version }}\n\nMenghapus bobot ini akan mempengaruhi perhitungan TOPSIS!'
+                                        })"
+                                        class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs hover:bg-red-100 transition-colors">
+                                        Hapus
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -207,16 +175,76 @@
         </div>
     </div>
 
-    <!-- Flash Messages -->
-    @if (session()->has('ok'))
-        <div class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-            {{ session('ok') }}
-        </div>
-    @endif
+    {{-- Form Modal --}}
+    <x-form-modal title="{{ $editingId ? 'Edit Bobot Kriteria' : 'Tambah Bobot Kriteria' }}">
+        <form wire:submit.prevent="save">
+            <div class="grid gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-neutral-text mb-2">
+                        Kriteria <span class="text-red-500">*</span>
+                    </label>
+                    <select wire:model="criterion_id" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all">
+                        <option value="">-- Pilih Kriteria --</option>
+                        @foreach($criteria as $criterion)
+                            <option value="{{ $criterion->id }}">{{ $criterion->code }} - {{ $criterion->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('criterion_id') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                </div>
 
-    @if (session()->has('err'))
-        <div class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-            {{ session('err') }}
-        </div>
-    @endif
+                <div>
+                    <label class="block text-sm font-medium text-neutral-text mb-2">
+                        Bobot (0-1) <span class="text-red-500">*</span>
+                        @if($remainingWeight > 0 && !$editingId)
+                            <span class="text-green-600 text-xs font-normal">
+                                • Sisa: {{ number_format($remainingWeight, 4) }}
+                            </span>
+                        @endif
+                    </label>
+                    <input type="number" wire:model.live="weight" step="0.001" min="0" max="{{ $editingId ? 1 : $remainingWeight }}"
+                           class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+                           placeholder="Contoh: 0.25">
+                    @error('weight') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+
+                    @if($weight && $remainingWeight < $weight && !$editingId)
+                        <div class="mt-2 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+                            ⚠️ Bobot yang dimasukkan ({{ $weight }}) melebihi sisa yang tersedia ({{ number_format($remainingWeight, 4) }})
+                        </div>
+                    @endif
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-neutral-text mb-2">Versi</label>
+                    <input type="text" wire:model="version" class="w-full px-4 py-2 border border-neutral-line rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-all" placeholder="v1">
+                    @error('version') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-neutral-line">
+                <button type="button" @click="$dispatch('close-form-modal')" class="px-5 py-2.5 rounded-lg bg-gray-100 text-neutral-text font-medium hover:bg-gray-200 transition-colors">
+                    Batal
+                </button>
+                <button type="submit"
+                        @if(!$editingId && $weight > $remainingWeight) disabled @endif
+                        class="inline-flex items-center px-5 py-2.5 rounded-lg bg-brand text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {{ $editingId ? 'Update' : 'Simpan' }}
+                </button>
+            </div>
+        </form>
+    </x-form-modal>
+
+    {{-- Delete Confirmation Modal --}}
+    <x-delete-modal title="Hapus Bobot Kriteria" onConfirm="delete" />
+
+    {{-- Import Modal --}}
+    <x-import-modal
+        title="Impor Bobot Kriteria"
+        route="{{ route('admin.criterion-weights.import') }}"
+        templateFile="templates/criterion_weights_import_template.csv"
+        requiredColumns="criterion_code, weight, version"
+        description="Upload file Excel atau CSV untuk mengimport banyak bobot kriteria sekaligus"
+    />
 </div>

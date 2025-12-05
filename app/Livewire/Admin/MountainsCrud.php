@@ -13,6 +13,7 @@ class MountainsCrud extends Component
     public $name, $elevation_m, $province, $lat, $lng, $status = 'active';
     public ?int $editingId = null;
     public string $q = '';
+    public $importFile;
 
     protected $rules = [
         'name' => 'required|string|max:150',
@@ -23,10 +24,17 @@ class MountainsCrud extends Component
         'status' => 'required|in:active,inactive',
     ];
 
+    public function create()
+    {
+        $this->resetForm();
+        $this->dispatch('open-form-modal');
+    }
+
     public function edit($id)
     {
         $this->editingId = $id;
         $this->fill(Mountain::findOrFail($id)->toArray());
+        $this->dispatch('open-form-modal');
     }
 
     public function resetForm()
@@ -47,12 +55,14 @@ class MountainsCrud extends Component
             ? Mountain::findOrFail($this->editingId)->update($data)
             : Mountain::create($data);
         $this->resetForm();
-        session()->flash('ok', 'Saved');
+        $this->dispatch('close-form-modal');
+        session()->flash('ok', 'Data gunung berhasil disimpan!');
     }
 
     public function delete($id)
     {
         Mountain::findOrFail($id)->delete();
+        session()->flash('ok', 'Data gunung berhasil dihapus!');
     }
 
     public function render()

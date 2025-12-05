@@ -12,7 +12,7 @@
             <!-- Logo & Title -->
             <div class="text-center mb-8">
                 <div class="flex justify-center mb-6">
-                    <div class="w-16 h-16 bg-brand rounded-2xl flex items-center justify-center text-2xl text-neutral-text">
+                    <div class="w-16 h-16 bg-brand rounded-2xl flex items-center justify-center text-2xl text-white">
                         🏔️
                     </div>
                 </div>
@@ -71,7 +71,7 @@
                     </a>
                 </div>
                 
-                <button type="submit" class="w-full bg-brand text-neutral-text py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200">
+                <button type="submit" class="w-full bg-brand text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200">
                     🚀 Login to Adventure
                 </button>
             </form>

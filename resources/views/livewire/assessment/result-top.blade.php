@@ -6,18 +6,18 @@
     </div>
     
     <div class="mb-6">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-neutral-text">Hasil Rekomendasi — Top {{ count($top) }}</h1>
+                <h1 class="text-xl sm:text-2xl font-bold text-neutral-text">Hasil Rekomendasi — Top {{ count($top) }}</h1>
                 <p class="text-sm text-neutral-sub">Menampilkan {{ count($top) }} rute paling cocok berdasarkan perhitungan TOPSIS.</p>
             </div>
-            <div class="flex gap-2">
-                <a href="{{ route('assess.wizard', $assessment->id) }}" 
-                   class="px-4 py-2 rounded-lg border border-neutral-line text-sm text-neutral-text hover:bg-white transition-colors">
+            <div class="flex flex-col sm:flex-row gap-2">
+                <a href="{{ route('assess.wizard', $assessment->id) }}"
+                   class="px-4 py-2 rounded-lg border border-neutral-line text-sm text-neutral-text hover:bg-white transition-colors text-center">
                     📝 Edit Kuesioner
                 </a>
                 <button onclick="submitTopsisCalculation({{ $assessment->id }})"
-                        class="px-4 py-2 rounded-lg bg-brand text-white hover:bg-indigo-700 transition-colors">
+                        class="px-4 py-2 rounded-lg bg-brand text-white hover:bg-indigo-700 transition-colors text-sm">
                     🔄 Hitung Ulang
                 </button>
             </div>
@@ -27,10 +27,10 @@
     {{-- Tab Navigation --}}
     <div class="mb-6">
         <div class="flex border-b border-neutral-line">
-            <button @click="activeTab = 'topsis'" 
+            <button @click="activeTab = 'topsis'"
                     :class="activeTab === 'topsis' ? 'border-b-2 border-brand text-brand' : 'text-neutral-sub hover:text-neutral-text'"
                     class="px-6 py-3 text-sm font-medium transition-colors">
-                📊 TOPSIS Results
+                📊 Hasil TOPSIS
             </button>
         </div>
     </div>
@@ -109,7 +109,7 @@
                         </div>
 
                         {{-- Score metrics --}}
-                        <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                             <div class="bg-white/70 rounded-lg p-3 border border-neutral-line/50">
                                 <div class="text-xs text-neutral-sub">Closeness Coefficient</div>
                                 <div class="text-lg font-bold text-brand">{{ number_format($item['cc'], 4) }}</div>
@@ -200,15 +200,15 @@
                 </div>
 
                 {{-- Action buttons --}}
-                <div class="mt-6 flex items-center gap-3">
+                <div class="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <a href="{{ route('assess.steps', $assessment->id) }}"
-                       class="inline-flex items-center px-4 py-2 bg-brand text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
+                       class="inline-flex items-center justify-center px-4 py-2 bg-brand text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                         Lihat Detail Perhitungan
                     </a>
-                    <button class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                    <button class="inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
                         </svg>
@@ -253,16 +253,16 @@
 
 
     {{-- Action buttons --}}
-    <div class="mt-8 flex gap-4">
-        <form method="POST" action="{{ route('assess.run', $assessmentId) }}" class="inline">
+    <div class="mt-8 flex flex-col sm:flex-row gap-4">
+        <form method="POST" action="{{ route('assess.run', $assessmentId) }}" class="w-full sm:w-auto">
             @csrf
-            <button class="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 text-neutral-text hover:bg-indigo-700">
+            <button class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700">
                 🔁 Hitung Ulang
             </button>
         </form>
-        
-        <a href="{{ route('assess.steps', $assessmentId) }}" 
-           class="inline-flex items-center px-4 py-2 rounded-xl bg-brand text-white hover:opacity-90">
+
+        <a href="{{ route('assess.steps', $assessmentId) }}"
+           class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 rounded-xl bg-brand text-white hover:opacity-90">
             📊 Lihat Tahapan
         </a>
     </div>

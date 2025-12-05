@@ -17,6 +17,7 @@ class CriterionWeightsCrud extends Component
     public $weight;
     public $version = 'v1';
     public $remainingWeight = 1.0;
+    public $importFile;
 
     protected $rules = [
         'criterion_id' => 'required|exists:criteria,id',
@@ -50,11 +51,18 @@ class CriterionWeightsCrud extends Component
         $this->remainingWeight = round($this->remainingWeight, 4);
     }
 
+    public function create()
+    {
+        $this->resetForm();
+        $this->dispatch('open-form-modal');
+    }
+
     public function edit($id)
     {
         $this->editingId = $id;
         $criterionWeight = CriterionWeight::findOrFail($id);
         $this->fill($criterionWeight->toArray());
+        $this->dispatch('open-form-modal');
     }
 
     public function resetForm()
@@ -80,19 +88,19 @@ class CriterionWeightsCrud extends Component
 
         if ($this->editingId) {
             CriterionWeight::findOrFail($this->editingId)->update($data);
-            session()->flash('ok', 'Bobot kriteria berhasil diperbarui');
         } else {
             CriterionWeight::create($data);
-            session()->flash('ok', 'Bobot kriteria berhasil ditambahkan');
         }
 
         $this->resetForm();
+        $this->dispatch('close-form-modal');
+        session()->flash('ok', 'Data bobot kriteria berhasil disimpan!');
     }
 
     public function delete($id)
     {
         CriterionWeight::findOrFail($id)->delete();
-        session()->flash('ok', 'Bobot kriteria berhasil dihapus');
+        session()->flash('ok', 'Data bobot kriteria berhasil dihapus!');
     }
 
     public function normalizeWeights()
